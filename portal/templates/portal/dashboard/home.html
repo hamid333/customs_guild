@@ -1,0 +1,23 @@
+{% extends "portal/dashboard/base_dashboard.html" %}
+{% block title %}نمای کلی{% endblock %}
+{% block dash_title %}نمای کلی داشبورد{% endblock %}
+
+{% block dash_content %}
+<div class="dash-cards">
+  <div class="dash-stat"><b>{{ stats.members }}</b><span>عضو ثبت‌شده</span></div>
+  <div class="dash-stat"><b>{{ stats.news }}</b><span>خبر منتشرشده</span></div>
+  <div class="dash-stat"><b>{{ stats.works }}</b><span>نمونه‌کار ثبت‌شده</span></div>
+  <div class="dash-stat"><b>{{ stats.hscodes }}</b><span>ردیف تعرفه</span></div>
+  <div class="dash-stat"><b>{{ stats.messages }}</b><span>پیام خوانده‌نشده</span></div>
+</div>
+
+<div class="dash-panel">
+  <h3 style="margin-bottom:16px;">ورود اطلاعات هر بخش</h3>
+  <div class="grid grid-4">
+    <a href="{% url 'portal:dash_member_add' %}" class="card" style="padding:20px; text-align:center;">➕ افزودن عضو جدید</a>
+    <a href="{% url 'portal:dash_news_add' %}" class="card" style="padding:20px; text-align:center;">➕ افزودن خبر جدید</a>
+    <a href="{% url 'portal:dash_work_add' %}" class="card" style="padding:20px; text-align:center;">➕ افزودن نمونه‌کار</a>
+    <a href="{% url 'portal:dash_hscode_add' %}" class="card" style="padding:20px; text-align:center;">➕ افزودن ردیف تعرفه</a>
+  </div>
+</div>
+{% endblock %}

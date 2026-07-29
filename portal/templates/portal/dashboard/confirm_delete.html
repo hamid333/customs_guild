@@ -1,0 +1,14 @@
+{% extends "portal/dashboard/base_dashboard.html" %}
+{% block title %}تأیید حذف{% endblock %}
+{% block dash_title %}تأیید حذف{% endblock %}
+
+{% block dash_content %}
+<div class="dash-panel" style="max-width:520px;">
+  <p style="margin-bottom:22px; font-size:15px;">آیا از حذف «{{ object }}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">بله، حذف شود</button>
+    <a href="javascript:history.back()" class="btn btn-outline-navy">انصراف</a>
+  </form>
+</div>
+{% endblock %}

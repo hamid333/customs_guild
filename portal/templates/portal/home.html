@@ -1,0 +1,150 @@
+{% extends "portal/base.html" %}
+{% load static %}
+{% block title %}{{ SITE_NAME }} | صفحه‌ی اصلی{% endblock %}
+
+{% block content %}
+
+<!-- ============ اسلایدر تمام‌صفحه (Hero) ============ -->
+<section class="hero-slider" aria-label="اسلایدر معرفی">
+  <div class="slide active">
+    <div class="slide-bg"></div>
+    <div class="container">
+      <div class="slide-content">
+        <p class="slide-eyebrow">انجمن صنفی حق‌العمل‌کاران گمرکی</p>
+        <h1 class="slide-title">شبکه‌ای معتبر از متخصصان ترخیص کالا و امور گمرکی</h1>
+        <p class="slide-desc">معرفی اعضای رسمی صنف، زمینه‌های فعالیت هرکدام و دسترسی سریع به خدمات تخصصی ترخیص، صادرات و واردات.</p>
+        <div class="slide-cta">
+          <a href="{% url 'portal:member_list' %}" class="btn btn-gold">مشاهده‌ی اعضا</a>
+          <a href="{% url 'portal:hs_code_search' %}" class="btn btn-outline">جست‌وجوی HS Code</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-bg"></div>
+    <div class="container">
+      <div class="slide-content">
+        <p class="slide-eyebrow">جشنواره‌ی عضویت</p>
+        <h1 class="slide-title">فرصت ویژه‌ی عضویت در انجمن برای فعالان حوزه‌ی گمرکی</h1>
+        <p class="slide-desc">با عضویت رسمی، از مشاوره‌ی تخصصی، معرفی به مشتریان و پوشش اطلاع‌رسانی انجمن بهره‌مند شوید.</p>
+        <div class="slide-cta">
+          <a href="{% url 'portal:contact' %}" class="btn btn-gold">درخواست عضویت</a>
+          <a href="{% url 'portal:completed_works' %}" class="btn btn-outline">نمونه‌کارهای اعضا</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-bg"></div>
+    <div class="container">
+      <div class="slide-content">
+        <p class="slide-eyebrow">خدمات آنلاین</p>
+        <h1 class="slide-title">جست‌وجوی سریع ردیف تعرفه‌ی گمرکی (HS Code)</h1>
+        <p class="slide-desc">با وارد کردن نام کالا یا کد تعرفه، اطلاعات مرتبط با گروه کالایی و حقوق ورودی را در سایت انجمن بیابید.</p>
+        <div class="slide-cta">
+          <a href="{% url 'portal:hs_code_search' %}" class="btn btn-gold">جست‌وجوی تعرفه</a>
+          <a href="{% url 'portal:news_list' %}" class="btn btn-outline">اخبار گمرکی</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slider-controls">
+    <button class="slider-arrow slider-prev" aria-label="اسلاید قبلی">‹</button>
+    <div class="slider-dots"></div>
+    <button class="slider-arrow slider-next" aria-label="اسلاید بعدی">›</button>
+  </div>
+</section>
+
+<!-- ============ زمینه‌های فعالیت ============ -->
+<section class="section">
+  <div class="container">
+    <p class="eyebrow">زمینه‌های فعالیت</p>
+    <h2 class="section-head">اعضای انجمن در چه حوزه‌هایی فعالیت می‌کنند</h2>
+    <div class="grid grid-4">
+      {% for spec in specializations %}
+      <a href="{% url 'portal:member_list' %}?spec={{ spec.slug }}" class="card reveal" style="padding:22px; display:flex; align-items:center; gap:12px; transition-delay:{{ forloop.counter0|add:0 }}0ms">
+        <div class="course-flag" style="margin:0;">⚓</div>
+        <h3 style="font-size:15px;">{{ spec.title }}</h3>
+      </a>
+      {% empty %}
+      <p>هنوز زمینه‌ی فعالیتی ثبت نشده است.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============ اعضای شاخص ============ -->
+<section class="section" style="background:#fff;">
+  <div class="container">
+    <p class="eyebrow">اعضای انجمن</p>
+    <h2 class="section-head">معرفی اعضای شاخص صنف</h2>
+    <div class="grid grid-4">
+      {% for m in featured_members %}
+      <div class="card member-card reveal" style="transition-delay:{{ forloop.counter0|add:0 }}0ms">
+        {% if m.photo %}
+          <img src="{{ m.photo.url }}" alt="{{ m.full_name }}">
+        {% else %}
+          <div class="member-avatar">{{ m.full_name|slice:":1" }}</div>
+        {% endif %}
+        <h3>{{ m.full_name }}</h3>
+        <p style="font-size:13px; margin-bottom:10px;">{{ m.city }}</p>
+        <div>
+          {% for s in m.specializations.all|slice:":3" %}<span class="badge">{{ s.title }}</span>{% endfor %}
+        </div>
+        <a href="{% url 'portal:member_detail' m.pk %}" class="btn btn-outline-navy btn-sm" style="margin-top:14px;">مشاهده‌ی پروفایل</a>
+      </div>
+      {% empty %}
+      <p>هنوز عضو شاخصی معرفی نشده است.</p>
+      {% endfor %}
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box"><b data-count="{{ member_count }}">۰</b><span>عضو فعال صنف</span></div>
+      <div class="stat-box"><b data-count="15">۰</b><span>سال سابقه‌ی فعالیت انجمن</span></div>
+      <div class="stat-box"><b data-count="3">۰</b><span>شعبه و دفتر نمایندگی</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ اخبار و نمونه‌کارها ============ -->
+<section class="section">
+  <div class="container">
+    <div class="grid grid-2" style="align-items:start;">
+      <div>
+        <p class="eyebrow">اخبار انجمن</p>
+        <h2 class="section-head">تازه‌ترین اخبار و بخشنامه‌ها</h2>
+        {% for n in latest_news %}
+        <a href="{{ n.get_absolute_url }}" class="card reveal" style="display:flex; gap:14px; padding:16px; margin-bottom:14px; align-items:center; transition-delay:{{ forloop.counter0|add:0 }}0ms">
+          <div class="card-thumb" style="width:90px; height:64px; flex-shrink:0; border-radius:10px;">
+            {% if n.cover_image %}<img src="{{ n.cover_image.url }}" alt="{{ n.title }}">{% endif %}
+          </div>
+          <div>
+            <h3 style="font-size:14.5px; margin-bottom:4px;">{{ n.title }}</h3>
+            <span style="font-size:12px; color:var(--text-muted);">{{ n.published_at|date:"Y/m/d" }}</span>
+          </div>
+        </a>
+        {% empty %}<p>هنوز خبری منتشر نشده است.</p>{% endfor %}
+        <a href="{% url 'portal:news_list' %}" class="btn btn-outline-navy btn-sm">مشاهده‌ی همه‌ی اخبار</a>
+      </div>
+
+      <div>
+        <p class="eyebrow">نمونه‌کارها</p>
+        <h2 class="section-head">پرونده‌های اخیر انجام‌شده</h2>
+        {% for w in latest_works %}
+        <div class="card work-card reveal" style="margin-bottom:14px; transition-delay:{{ forloop.counter0|add:0 }}0ms">
+          <div class="card-body" style="padding:16px 18px;">
+            <h3 style="font-size:14.5px;">{{ w.title }}</h3>
+            <p style="font-size:12.5px; margin:6px 0 0;">{{ w.description|truncatewords:18 }}</p>
+          </div>
+        </div>
+        {% empty %}<p>هنوز نمونه‌کاری ثبت نشده است.</p>{% endfor %}
+        <a href="{% url 'portal:completed_works' %}" class="btn btn-outline-navy btn-sm">مشاهده‌ی همه‌ی کارها</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "portal/dashboard/base_dashboard.html" %}
+{% block title %}کارهای انجام‌شده{% endblock %}
+{% block dash_title %}مدیریت نمونه‌کارها{% endblock %}
+
+{% block dash_content %}
+<div style="margin-bottom:16px;">
+  <a href="{% url 'portal:dash_work_add' %}" class="btn btn-gold btn-sm">➕ افزودن نمونه‌کار</a>
+</div>
+<div class="dash-panel" style="overflow-x:auto;">
+  <table class="dash-table">
+    <thead><tr><th>عنوان</th><th>عضو مجری</th><th>دسته‌بندی</th><th>تاریخ اتمام</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for w in works %}
+      <tr>
+        <td>{{ w.title }}</td>
+        <td>{{ w.member|default:"—" }}</td>
+        <td>{{ w.category|default:"—" }}</td>
+        <td>{{ w.completed_date|date:"Y/m/d" }}</td>
+        <td class="table-actions">
+          <a href="{% url 'portal:dash_work_edit' w.pk %}" class="btn btn-outline-navy btn-sm">ویرایش</a>
+          <a href="{% url 'portal:dash_work_delete' w.pk %}" class="btn btn-danger btn-sm">حذف</a>
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="5" style="text-align:center; padding:24px;">هیچ نمونه‌کاری ثبت نشده است.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

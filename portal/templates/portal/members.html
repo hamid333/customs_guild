@@ -1,0 +1,50 @@
+{% extends "portal/base.html" %}
+{% block title %}اعضای صنف | {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section" style="margin-top:78px;">
+  <div class="container">
+    <p class="eyebrow">اعضای صنف</p>
+    <h1 class="section-head">فهرست اعضای رسمی انجمن</h1>
+
+    <form method="get" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:32px;">
+      <input type="text" name="q" value="{{ current_q }}" placeholder="جست‌وجو بر اساس نام، شهر یا شماره‌ی عضویت…" class="form-control" style="flex:1; min-width:220px;">
+      <select name="spec" class="form-control" style="max-width:220px;">
+        <option value="">همه‌ی زمینه‌های فعالیت</option>
+        {% for s in specializations %}
+        <option value="{{ s.slug }}" {% if s.slug == current_spec %}selected{% endif %}>{{ s.title }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-gold">جست‌وجو</button>
+    </form>
+
+    <div class="grid grid-4">
+      {% for m in members %}
+      <div class="card member-card reveal" style="transition-delay:{{ forloop.counter0|add:0 }}0ms">
+        {% if m.photo %}
+          <img src="{{ m.photo.url }}" alt="{{ m.full_name }}">
+        {% else %}
+          <div class="member-avatar">{{ m.full_name|slice:":1" }}</div>
+        {% endif %}
+        <h3>{{ m.full_name }}</h3>
+        <p style="font-size:13px; margin-bottom:10px;">{{ m.city|default:"—" }} · عضویت {{ m.membership_no }}</p>
+        <div>
+          {% for s in m.specializations.all %}<span class="badge">{{ s.title }}</span>{% empty %}<span class="badge">زمینه ثبت نشده</span>{% endfor %}
+        </div>
+        <a href="{% url 'portal:member_detail' m.pk %}" class="btn btn-outline-navy btn-sm" style="margin-top:14px;">مشاهده‌ی پروفایل</a>
+      </div>
+      {% empty %}
+      <p>موردی با این مشخصات یافت نشد.</p>
+      {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <div style="display:flex; gap:10px; justify-content:center; margin-top:36px;">
+      {% if page_obj.has_previous %}<a class="btn btn-outline-navy btn-sm" href="?page={{ page_obj.previous_page_number }}{% if current_q %}&q={{ current_q }}{% endif %}{% if current_spec %}&spec={{ current_spec }}{% endif %}">قبلی</a>{% endif %}
+      <span style="align-self:center; font-size:13px; color:var(--text-muted);">صفحه‌ی {{ page_obj.number }} از {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a class="btn btn-outline-navy btn-sm" href="?page={{ page_obj.next_page_number }}{% if current_q %}&q={{ current_q }}{% endif %}{% if current_spec %}&spec={{ current_spec }}{% endif %}">بعدی</a>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "portal/dashboard/base_dashboard.html" %}
+{% block title %}اعضای صنف{% endblock %}
+{% block dash_title %}مدیریت اعضای صنف{% endblock %}
+
+{% block dash_content %}
+<div style="margin-bottom:16px;">
+  <a href="{% url 'portal:dash_member_add' %}" class="btn btn-gold btn-sm">➕ افزودن عضو جدید</a>
+</div>
+<div class="dash-panel" style="overflow-x:auto;">
+  <table class="dash-table">
+    <thead><tr><th>نام</th><th>شماره‌ی عضویت</th><th>شهر</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for m in members %}
+      <tr>
+        <td>{{ m.full_name }}</td>
+        <td>{{ m.membership_no }}</td>
+        <td>{{ m.city }}</td>
+        <td>{% if m.status == "active" %}<span class="badge">فعال</span>{% else %}<span class="badge" style="background:#fdecea; color:#c0392b;">تعلیق‌شده</span>{% endif %}</td>
+        <td class="table-actions">
+          <a href="{% url 'portal:dash_member_edit' m.pk %}" class="btn btn-outline-navy btn-sm">ویرایش</a>
+          <a href="{% url 'portal:dash_member_delete' m.pk %}" class="btn btn-danger btn-sm">حذف</a>
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="5" style="text-align:center; padding:24px;">هیچ عضوی ثبت نشده است.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if is_paginated %}
+<div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+  {% if page_obj.has_previous %}<a class="btn btn-outline-navy btn-sm" href="?page={{ page_obj.previous_page_number }}">قبلی</a>{% endif %}
+  <span style="align-self:center; font-size:13px; color:var(--text-muted);">صفحه‌ی {{ page_obj.number }} از {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a class="btn btn-outline-navy btn-sm" href="?page={{ page_obj.next_page_number }}">بعدی</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}
