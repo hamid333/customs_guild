@@ -23,12 +23,12 @@ urlpatterns = [
     path("dashboard/login/", views.DashboardLoginView.as_view(), name="dashboard_login"),
     path("dashboard/logout/", views.DashboardLogoutView.as_view(), name="dashboard_logout"),
     path("dashboard/", views.DashboardHomeView.as_view(), name="dashboard_home"),
-
-    # اعضا
-    path("dashboard/members/", views.MemberDashListView.as_view(), name="dash_member_list"),
-    path("dashboard/members/add/", views.MemberCreateView.as_view(), name="dash_member_add"),
-    path("dashboard/members/<int:pk>/edit/", views.MemberUpdateView.as_view(), name="dash_member_edit"),
-    path("dashboard/members/<int:pk>/delete/", views.MemberDeleteView.as_view(), name="dash_member_delete"),
+    #
+    # # اعضا
+    # path("dashboard/members/", views.MemberDashListView.as_view(), name="dash_member_list"),
+    # path("dashboard/members/add/", views.MemberCreateView.as_view(), name="dash_member_add"),
+    # path("dashboard/members/<int:pk>/edit/", views.MemberUpdateView.as_view(), name="dash_member_edit"),
+    # path("dashboard/members/<int:pk>/delete/", views.MemberDeleteView.as_view(), name="dash_member_delete"),
 
     # اخبار
     path("dashboard/news/", views.NewsDashListView.as_view(), name="dash_news_list"),
@@ -48,11 +48,6 @@ urlpatterns = [
     path("dashboard/hs-codes/<int:pk>/edit/", views.HSCodeUpdateView.as_view(), name="dash_hscode_edit"),
     path("dashboard/hs-codes/<int:pk>/delete/", views.HSCodeDeleteView.as_view(), name="dash_hscode_delete"),
 
-    # زمینه‌های فعالیت (Specialization)
-    path("dashboard/specializations/", views.SpecializationDashListView.as_view(), name="dash_specialization_list"),
-    path("dashboard/specializations/add/", views.SpecializationCreateView.as_view(), name="dash_specialization_add"),
-    path("dashboard/specializations/<int:pk>/edit/", views.SpecializationUpdateView.as_view(), name="dash_specialization_edit"),
-    path("dashboard/specializations/<int:pk>/delete/", views.SpecializationDeleteView.as_view(), name="dash_specialization_delete"),
 
     # اسلایدهای صفحه‌ی اصلی (HeroSlide)
     path("dashboard/slides/", views.SlideDashListView.as_view(), name="dash_slide_list"),

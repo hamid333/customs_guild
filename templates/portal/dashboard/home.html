@@ -1,0 +1,33 @@
+{% extends "portal/dashboard/base_dashboard.html" %}
+{% block title %}نمای کلی{% endblock %}
+{% block dash_title %}نمای کلی داشبورد{% endblock %}
+
+{% block dash_content %}
+<div class="dash-cards">
+  <div class="dash-stat"><b>{{ stats.members }}</b><span>عضو ثبت‌شده</span></div>
+  <div class="dash-stat"><b>{{ stats.specializations }}</b><span>زمینه‌ی فعالیت</span></div>
+  <div class="dash-stat"><b>{{ stats.slides }}</b><span>اسلاید صفحه‌ی اصلی</span></div>
+  <div class="dash-stat"><b>{{ stats.news }}</b><span>خبر منتشرشده</span></div>
+  <div class="dash-stat"><b>{{ stats.works }}</b><span>نمونه‌کار ثبت‌شده</span></div>
+  <div class="dash-stat"><b>{{ stats.hscodes }}</b><span>ردیف تعرفه</span></div>
+  <div class="dash-stat"><b>{{ stats.messages }}</b><span>پیام خوانده‌نشده</span></div>
+</div>
+
+<div class="dash-panel">
+  <h3 style="margin-bottom:16px;">ورود اطلاعات هر بخش</h3>
+  <div class="grid grid-4">
+    <button type="button" class="card" style="padding:20px; text-align:center;" data-modal-form
+            data-url="{% url 'portal:dash_member_add' %}" data-title="افزودن عضو جدید">➕ افزودن عضو جدید</button>
+    <button type="button" class="card" style="padding:20px; text-align:center;" data-modal-form
+            data-url="{% url 'specialization_add' %}" data-title="افزودن زمینه‌ی فعالیت">➕ افزودن زمینه‌ی فعالیت</button>
+    <button type="button" class="card" style="padding:20px; text-align:center;" data-modal-form
+            data-url="{% url 'portal:dash_slide_add' %}" data-title="افزودن اسلاید جدید">➕ افزودن اسلاید</button>
+    <button type="button" class="card" style="padding:20px; text-align:center;" data-modal-form
+            data-url="{% url 'portal:dash_news_add' %}" data-title="افزودن خبر جدید">➕ افزودن خبر جدید</button>
+    <button type="button" class="card" style="padding:20px; text-align:center;" data-modal-form
+            data-url="{% url 'portal:dash_work_add' %}" data-title="افزودن نمونه‌کار">➕ افزودن نمونه‌کار</button>
+    <button type="button" class="card" style="padding:20px; text-align:center;" data-modal-form
+            data-url="{% url 'portal:dash_hscode_add' %}" data-title="افزودن ردیف تعرفه">➕ افزودن ردیف تعرفه</button>
+  </div>
+</div>
+{% endblock %}

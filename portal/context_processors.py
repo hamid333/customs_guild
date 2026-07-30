@@ -3,7 +3,7 @@ from django.conf import settings
 
 def site_info(request):
     """اطلاعات پایه‌ی سایت + فهرست زمینه‌های فعالیت (برای منوی کشویی) که در تمام قالب‌ها قابل استفاده است."""
-    from .models import Specialization  # ایمپورت داخل تابع برای جلوگیری از وابستگی حلقوی در زمان بارگذاری اپ‌ها
+    from specialization.models import Specialization  # ایمپورت داخل تابع برای جلوگیری از وابستگی حلقوی در زمان بارگذاری اپ‌ها
 
     return {
         "SITE_NAME": getattr(settings, "SITE_NAME", "انجمن صنفی حق‌العمل‌کاران گمرکی"),

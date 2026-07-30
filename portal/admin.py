@@ -6,23 +6,9 @@ import django_jalali.admin as jadmin  # noqa: F401
 from django_jalali.admin.filters import JDateFieldListFilter
 
 from .models import (
-    Specialization, Member, HSCode, NewsPost, CompletedWork, ContactMessage, HeroSlide,
+    HSCode, NewsPost, CompletedWork, ContactMessage, HeroSlide,
 )
 
-
-@admin.register(Specialization)
-class SpecializationAdmin(admin.ModelAdmin):
-    list_display = ("title",)
-    prepopulated_fields = {"slug": ("title",)}
-    search_fields = ("title",)
-
-
-@admin.register(Member)
-class MemberAdmin(admin.ModelAdmin):
-    list_display = ("full_name", "membership_no", "role", "city", "status", "is_featured", "created_at")
-    list_filter = ("status", "role", "is_featured", "specializations", "city")
-    search_fields = ("full_name", "membership_no", "license_no", "email", "phone")
-    filter_horizontal = ("specializations",)
 
 
 @admin.register(HSCode)

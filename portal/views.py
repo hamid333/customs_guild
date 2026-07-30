@@ -1,17 +1,4 @@
-"""
-ویوهای سایت انجمن صنفی حق‌العمل‌کاران گمرکی.
 
-بخش اول: صفحات عمومی (Home / اعضا / اعضای اصلی / جست‌وجوی HS Code / اخبار / نمونه‌کارها / تماس با ما)
-بخش دوم: داشبورد مدیریتی (ورود اطلاعات هر بخش) که فقط کاربران staff به آن دسترسی دارند.
-
-افزودن/ویرایش/حذف در داشبورد از طریق مودال (SweetAlert2) و درخواست AJAX انجام می‌شود:
-    - AjaxFormMixin  : به CreateView/UpdateView اضافه می‌شود. اگر درخواست AJAX باشد
-                       (هدر X-Requested-With: XMLHttpRequest)، به‌جای رندر صفحه‌ی کامل،
-                       فقط قطعه‌ی HTML فرم را برمی‌گرداند (برای GET) یا JSON شامل
-                       success/errors برمی‌گرداند (برای POST). برای درخواست‌های غیر AJAX
-                       (مثلاً ورود مستقیم به آدرس افزودن/ویرایش)، صفحه‌ی کامل به‌صورت معمول رندر می‌شود.
-    - AjaxDeleteMixin: مشابه، برای DeleteView.
-"""
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView
@@ -24,13 +11,12 @@ from django.views.generic import (
     CreateView, UpdateView, DeleteView,
 )
 
-from .forms import (
-    ContactForm, HSCodeSearchForm, MemberForm, NewsPostForm, CompletedWorkForm,
-    HSCodeForm, SpecializationForm, HeroSlideForm, StyledAuthenticationForm,
-)
-from .models import (
-    Member, HSCode, NewsPost, CompletedWork, ContactMessage, Specialization, HeroSlide,
-)
+from member.models import Member
+from specialization.models import Specialization
+
+
+from .forms import (ContactForm, HSCodeSearchForm, NewsPostForm, CompletedWorkForm, HSCodeForm, HeroSlideForm, StyledAuthenticationForm)
+from .models import (HSCode, NewsPost, CompletedWork, ContactMessage, HeroSlide)
 
 
 # =====================================================================
@@ -295,37 +281,6 @@ class DashboardHomeView(StaffRequiredMixin, TemplateView):
         return ctx
 
 
-# ---- بخش «اعضا» در داشبورد -----------------------------------------
-class MemberDashListView(StaffRequiredMixin, ListView):
-    model = Member
-    template_name = "portal/dashboard/member_list.html"
-    context_object_name = "members"
-    paginate_by = 20
-    extra_context = {"active": "members"}
-
-
-class MemberCreateView(StaffRequiredMixin, AjaxFormMixin, CreateView):
-    model = Member
-    form_class = MemberForm
-    fragment_template_name = "portal/dashboard/fragments/_member_fields.html"
-    modal_title = "افزودن عضو جدید"
-    success_url = reverse_lazy("portal:dash_member_list")
-
-
-class MemberUpdateView(StaffRequiredMixin, AjaxFormMixin, UpdateView):
-    model = Member
-    form_class = MemberForm
-    fragment_template_name = "portal/dashboard/fragments/_member_fields.html"
-    modal_title = "ویرایش عضو"
-    success_url = reverse_lazy("portal:dash_member_list")
-
-
-class MemberDeleteView(StaffRequiredMixin, AjaxDeleteMixin, DeleteView):
-    model = Member
-    template_name = "portal/dashboard/confirm_delete.html"
-    success_url = reverse_lazy("portal:dash_member_list")
-
-
 # ---- بخش «اخبار» در داشبورد ------------------------------------------
 class NewsDashListView(StaffRequiredMixin, ListView):
     model = NewsPost
@@ -418,36 +373,6 @@ class HSCodeDeleteView(StaffRequiredMixin, AjaxDeleteMixin, DeleteView):
     template_name = "portal/dashboard/confirm_delete.html"
     success_url = reverse_lazy("portal:dash_hscode_list")
 
-
-# ---- بخش «زمینه‌های فعالیت» در داشبورد (Specialization) --------------
-class SpecializationDashListView(StaffRequiredMixin, ListView):
-    model = Specialization
-    template_name = "portal/dashboard/specialization_list.html"
-    context_object_name = "specializations"
-    paginate_by = 30
-    extra_context = {"active": "specializations"}
-
-
-class SpecializationCreateView(StaffRequiredMixin, AjaxFormMixin, CreateView):
-    model = Specialization
-    form_class = SpecializationForm
-    fragment_template_name = "portal/dashboard/fragments/_specialization_fields.html"
-    modal_title = "افزودن زمینه‌ی فعالیت"
-    success_url = reverse_lazy("portal:dash_specialization_list")
-
-
-class SpecializationUpdateView(StaffRequiredMixin, AjaxFormMixin, UpdateView):
-    model = Specialization
-    form_class = SpecializationForm
-    fragment_template_name = "portal/dashboard/fragments/_specialization_fields.html"
-    modal_title = "ویرایش زمینه‌ی فعالیت"
-    success_url = reverse_lazy("portal:dash_specialization_list")
-
-
-class SpecializationDeleteView(StaffRequiredMixin, AjaxDeleteMixin, DeleteView):
-    model = Specialization
-    template_name = "portal/dashboard/confirm_delete.html"
-    success_url = reverse_lazy("portal:dash_specialization_list")
 
 
 # ---- بخش «اسلایدهای صفحه‌ی اصلی» در داشبورد (HeroSlide) --------------

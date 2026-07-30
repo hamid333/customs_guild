@@ -15,7 +15,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 
 from .models import (
-    ContactMessage, Member, NewsPost, CompletedWork, HSCode, Specialization, HeroSlide,
+    ContactMessage, NewsPost, CompletedWork, HSCode, HeroSlide,
 )
 
 # کلاس‌های CSS مشترک برای یک‌دستی ظاهر فرم‌ها
@@ -54,6 +54,7 @@ class HSCodeSearchForm(forms.Form):
         widget=forms.TextInput(attrs={
             "class": TEXT_WIDGET_CLASS,
             "placeholder": "کد تعرفه یا نام کالا را وارد کنید…",
+            "placeholder": "کد تعرفه یا نام کالا را وارد کنید…",
         }),
     )
 
@@ -61,29 +62,6 @@ class HSCodeSearchForm(forms.Form):
 # ---------------------------------------------------------------
 # فرم‌های داشبورد مدیریتی (ورود اطلاعات هر بخش)
 # ---------------------------------------------------------------
-
-class MemberForm(forms.ModelForm):
-    class Meta:
-        model = Member
-        fields = [
-            "full_name", "membership_no", "license_no", "role", "specializations",
-            "photo", "phone", "email", "city", "address", "bio",
-            "established_year", "status", "is_featured",
-        ]
-        widgets = {
-            "full_name": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
-            "membership_no": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
-            "license_no": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
-            "role": forms.Select(attrs={"class": SELECT2_WIDGET_CLASS}),
-            "specializations": forms.SelectMultiple(attrs={"class": SELECT2_WIDGET_CLASS}),
-            "phone": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
-            "email": forms.EmailInput(attrs={"class": TEXT_WIDGET_CLASS}),
-            "city": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
-            "address": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
-            "bio": forms.Textarea(attrs={"class": TEXT_WIDGET_CLASS, "rows": 4}),
-            "established_year": forms.NumberInput(attrs={"class": TEXT_WIDGET_CLASS}),
-            "status": forms.Select(attrs={"class": SELECT2_WIDGET_CLASS}),
-        }
 
 
 class NewsPostForm(forms.ModelForm):
@@ -134,27 +112,6 @@ class HSCodeForm(forms.ModelForm):
         }
 
 
-class SpecializationForm(forms.ModelForm):
-    """فرم افزودن/ویرایش دستی زمینه‌ی فعالیت (Specialization) از داشبورد."""
-
-    class Meta:
-        model = Specialization
-        fields = ["title", "slug"]
-        widgets = {
-            "title": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS, "placeholder": "مثلاً: ترخیص کالای صنعتی"}),
-            "slug": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS, "placeholder": "اختیاری - در صورت خالی بودن خودکار ساخته می‌شود"}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["slug"].required = False
-
-    def clean_slug(self):
-        from django.utils.text import slugify
-        slug = self.cleaned_data.get("slug", "").strip()
-        if not slug:
-            slug = slugify(self.cleaned_data.get("title", ""), allow_unicode=True)
-        return slug
 
 
 class HeroSlideForm(forms.ModelForm):

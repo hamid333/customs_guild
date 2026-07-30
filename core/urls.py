@@ -10,6 +10,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("portal.urls", namespace="portal")),
+    path("dashboard/specializations/", include("specialization.urls")),
+    path("dashboard/member/", include("member.urls")),
 ]
 
 # نمایش فایل‌های مدیا (تصاویر) در حالت توسعه (DEBUG)

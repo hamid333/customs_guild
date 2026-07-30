@@ -1,0 +1,41 @@
+{% extends "portal/dashboard/base_dashboard.html" %}
+{% block title %}زمینه‌های فعالیت{% endblock %}
+{% block dash_title %}مدیریت زمینه‌های فعالیت (Specialization){% endblock %}
+
+{% block dash_content %}
+<p class="help-text" style="margin-bottom:16px;">
+  زمینه‌های فعالیت همان تخصص‌هایی هستند که هنگام ثبت هر عضو قابل انتخاب‌اند (مثلاً «ترخیص کالای صنعتی»، «صادرات»).
+  از این بخش می‌توانید هر زمینه‌ی دلخواهی را خودتان دستی اضافه کنید.
+</p>
+<div style="margin-bottom:16px;">
+  <button type="button" class="btn btn-gold btn-sm" data-modal-form
+          data-url="{% url 'specialization_add' %}" data-title="افزودن زمینه‌ی فعالیت">➕ افزودن زمینه‌ی فعالیت</button>
+</div>
+<div class="dash-panel" style="overflow-x:auto;">
+  <table class="dash-table">
+    <thead><tr><th>عنوان</th><th>اسلاگ</th><th>تعداد اعضا</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for s in specializations %}
+      <tr>
+        <td>{{ s.title }}</td>
+        <td style="direction:ltr; text-align:right;">{{ s.slug }}</td>
+        <td>{{ s.members.count }}</td>
+        <td class="table-actions">
+          <button type="button" class="btn btn-outline-navy btn-sm" data-modal-form
+                  data-url="{% url 'specialization_edit' s.pk %}" data-title="ویرایش زمینه‌ی فعالیت">ویرایش</button>
+          <button type="button" class="btn btn-danger btn-sm" data-modal-delete
+                  data-url="{% url 'specialization_delete' s.pk %}" data-name="{{ s.title }}">حذف</button>
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="4" style="text-align:center; padding:24px;">هنوز زمینه‌ی فعالیتی ثبت نشده است.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if is_paginated %}
+<div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+  {% if page_obj.has_previous %}<a class="btn btn-outline-navy btn-sm" href="?page={{ page_obj.previous_page_number }}">قبلی</a>{% endif %}
+  <span style="align-self:center; font-size:13px; color:var(--text-muted);">صفحه‌ی {{ page_obj.number }} از {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a class="btn btn-outline-navy btn-sm" href="?page={{ page_obj.next_page_number }}">بعدی</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

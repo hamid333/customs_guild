@@ -16,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # هشدار: این کلید فقط برای توسعه (development) است.
 # پیش از انتشار در محیط production حتماً آن را با یک مقدار تصادفی و محرمانه جایگزین کنید
 # (مثلاً با: python -c "import secrets; print(secrets.token_urlsafe(50))")
-SECRET_KEY = "django-insecure-CHANGE-THIS-KEY-BEFORE-DEPLOYMENT-!!!"
+SECRET_KEY = "django-insecure-&u5)l%g7vg(n_ai=-#()e=m8u$$ps3@)n@n!%g@mf+8kzur4#@"
 
 # در محیط تولید (production) حتماً DEBUG = False کنید.
 DEBUG = True
@@ -37,8 +37,9 @@ INSTALLED_APPS = [
 
     "django_jalali",
 
-    # اپ اصلی سایت
     "portal",
+    "member",
+    "specialization",
 ]
 
 MIDDLEWARE = [
@@ -56,7 +57,7 @@ ROOT_URLCONF = "core.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        'DIRS': [BASE_DIR / 'templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -110,7 +111,7 @@ USE_TZ = True
 # فایل‌های استاتیک و مدیا
 # ------------------------------------------------------------------
 STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR / "portal" / "static"]
+STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"  # برای collectstatic در production
 
 MEDIA_URL = "media/"
@@ -127,6 +128,6 @@ LOGOUT_REDIRECT_URL = "portal:home"
 
 # اطلاعات پایه‌ی سایت (نام انجمن، اطلاعات تماس) که در context_processors استفاده می‌شود
 SITE_NAME = "انجمن صنفی حق‌العمل‌کاران گمرکی"
-SITE_PHONE = "021-88112233"
-SITE_EMAIL = "info@customs-guild.example"
-SITE_ADDRESS = "تهران، خیابان گمرک، ساختمان مرکزی انجمن، طبقه‌ی سوم"
+SITE_PHONE = "09339091876"
+SITE_EMAIL = "info@customs-guild.ir"
+SITE_ADDRESS = "مشهد - خیابان دستغیب 20 پلاک 76"
