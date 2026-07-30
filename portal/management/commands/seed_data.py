@@ -3,12 +3,13 @@
 اجرا:
     python manage.py seed_data
 """
-from datetime import date, timedelta
+from datetime import timedelta
 
+import jdatetime
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
 
-from portal.models import Specialization, Member, HSCode, NewsPost, CompletedWork
+from portal.models import Specialization, Member, HSCode, NewsPost, CompletedWork, HeroSlide
 
 
 class Command(BaseCommand):
@@ -17,7 +18,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write("در حال ایجاد داده‌ی نمونه...")
 
-        # ---------------- زمینه‌های فعالیت ----------------
+        # ---------------- زمینه‌های فعالیت (Specialization) ----------------
         spec_titles = [
             "ترخیص کالای صنعتی", "واردات خودرو", "صادرات کالا",
             "امور بنادر و فرودگاه‌ها", "ترخیص کالای دارویی", "لجستیک و حمل‌ونقل بین‌المللی",
@@ -29,12 +30,12 @@ class Command(BaseCommand):
             )
             specs.append(spec)
 
-        # ---------------- اعضا ----------------
+        # ---------------- اعضا (با سمت‌های متفاوت) ----------------
         members_data = [
-            {"full_name": "شرکت ترخیص کالای پارسیان", "membership_no": "TC-1001", "city": "تهران", "established_year": 1388, "is_featured": True},
-            {"full_name": "مؤسسه‌ی حق‌العمل‌کاری آریا گمرک", "membership_no": "TC-1002", "city": "بندرعباس", "established_year": 1392, "is_featured": True},
-            {"full_name": "شرکت بازرگانی و ترخیص کاسپین", "membership_no": "TC-1003", "city": "انزلی", "established_year": 1395, "is_featured": True},
-            {"full_name": "گروه ترخیص و لجستیک البرز", "membership_no": "TC-1004", "city": "تهران", "established_year": 1390, "is_featured": True},
+            {"full_name": "شرکت ترخیص کالای پارسیان", "membership_no": "TC-1001", "city": "تهران", "established_year": 1388, "role": Member.ROLE_CEO},
+            {"full_name": "مؤسسه‌ی حق‌العمل‌کاری آریا گمرک", "membership_no": "TC-1002", "city": "بندرعباس", "established_year": 1392, "role": Member.ROLE_INSPECTOR},
+            {"full_name": "شرکت بازرگانی و ترخیص کاسپین", "membership_no": "TC-1003", "city": "انزلی", "established_year": 1395, "role": Member.ROLE_NORMAL},
+            {"full_name": "گروه ترخیص و لجستیک البرز", "membership_no": "TC-1004", "city": "تهران", "established_year": 1390, "role": Member.ROLE_OTHER},
         ]
         members = []
         for i, data in enumerate(members_data):
@@ -42,7 +43,8 @@ class Command(BaseCommand):
                 "full_name": data["full_name"],
                 "city": data["city"],
                 "established_year": data["established_year"],
-                "is_featured": data["is_featured"],
+                "role": data["role"],
+                "is_featured": True,
                 "bio": "این عضو با سال‌ها تجربه در حوزه‌ی ترخیص و امور گمرکی، خدمات تخصصی به بازرگانان ارائه می‌دهد.",
                 "phone": "021-8000000" + str(i),
                 "status": Member.STATUS_ACTIVE,
@@ -63,7 +65,7 @@ class Command(BaseCommand):
                 "title_fa": fa, "title_en": en, "category": cat, "duty_rate": duty,
             })
 
-        # ---------------- اخبار ----------------
+        # ---------------- اخبار (تاریخ انتشار شمسی) ----------------
         news_data = [
             ("بخشنامه‌ی جدید گمرک درباره‌ی ترخیص کالاهای اساسی", "خلاصه‌ای از آخرین بخشنامه‌ی گمرک ایران درباره‌ی رویه‌ی ترخیص کالاهای اساسی منتشر شد."),
             ("برگزاری مجمع عمومی سالانه‌ی انجمن", "مجمع عمومی سالانه‌ی انجمن با حضور اعضای فعال صنف برگزار می‌شود."),
@@ -73,10 +75,10 @@ class Command(BaseCommand):
             NewsPost.objects.get_or_create(slug=slugify(title, allow_unicode=True), defaults={
                 "title": title, "summary": summary,
                 "body": summary + "\n\nمتن کامل این خبر به‌زودی تکمیل خواهد شد.",
-                "published_at": date.today() - timedelta(days=i * 3),
+                "published_at": jdatetime.datetime.now() - timedelta(days=i * 3),
             })
 
-        # ---------------- نمونه‌کارها ----------------
+        # ---------------- نمونه‌کارها (تاریخ اتمام شمسی) ----------------
         works_data = [
             ("ترخیص محموله‌ی ماشین‌آلات صنعتی از بندر شهید رجایی", "واردات صنعتی"),
             ("صادرات محموله‌ی خشکبار به کشورهای همسایه", "صادرات"),
@@ -88,7 +90,37 @@ class Command(BaseCommand):
                 "category": cat,
                 "description": "شرح مختصر این پرونده و مراحل انجام آن توسط تیم تخصصی عضو مربوطه.",
                 "member": members[i % len(members)],
-                "completed_date": date.today() - timedelta(days=i * 10),
+                "completed_date": jdatetime.date.today() - timedelta(days=i * 10),
             })
+
+        # ---------------- اسلایدهای صفحه‌ی اصلی (HeroSlide) ----------------
+        slides_data = [
+            {
+                "eyebrow": "انجمن صنفی حق‌العمل‌کاران گمرکی",
+                "title": "شبکه‌ای معتبر از متخصصان ترخیص کالا و امور گمرکی",
+                "description": "معرفی اعضای رسمی صنف، زمینه‌های فعالیت هرکدام و دسترسی سریع به خدمات تخصصی ترخیص، صادرات و واردات.",
+                "button_text": "مشاهده‌ی اعضا",
+                "button_url": "/members/",
+                "order": 1,
+            },
+            {
+                "eyebrow": "جشنواره‌ی عضویت",
+                "title": "فرصت ویژه‌ی عضویت در انجمن برای فعالان حوزه‌ی گمرکی",
+                "description": "با عضویت رسمی، از مشاوره‌ی تخصصی، معرفی به مشتریان و پوشش اطلاع‌رسانی انجمن بهره‌مند شوید.",
+                "button_text": "درخواست عضویت",
+                "button_url": "/contact/",
+                "order": 2,
+            },
+            {
+                "eyebrow": "خدمات آنلاین",
+                "title": "جست‌وجوی سریع ردیف تعرفه‌ی گمرکی (HS Code)",
+                "description": "",
+                "button_text": "جست‌وجوی تعرفه",
+                "button_url": "/hs-code/",
+                "order": 3,
+            },
+        ]
+        for data in slides_data:
+            HeroSlide.objects.get_or_create(title=data["title"], defaults=data)
 
         self.stdout.write(self.style.SUCCESS("داده‌ی نمونه با موفقیت ایجاد شد."))

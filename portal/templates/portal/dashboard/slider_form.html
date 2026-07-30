@@ -1,0 +1,61 @@
+{% extends "portal/dashboard/base_dashboard.html" %}
+{% block title %}فرم اسلاید{% endblock %}
+{% block dash_title %}{% if object %}ویرایش اسلاید{% else %}افزودن اسلاید{% endif %}{% endblock %}
+
+{% block dash_content %}
+<div class="dash-panel" style="max-width:720px;">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="form-row">
+      <label>متن بالای عنوان (Eyebrow) — اختیاری</label>
+      {{ form.eyebrow }}
+    </div>
+
+    <div class="form-row">
+      <label>عنوان اصلی — اختیاری</label>
+      {{ form.title }}
+    </div>
+
+    <div class="form-row">
+      <label>توضیحات — اختیاری</label>
+      {{ form.description }}
+    </div>
+
+    <div class="form-row">
+      <label>تصویر پس‌زمینه — اختیاری</label>
+      {{ form.image }}
+      {% if object and object.image %}
+        <p style="margin-top:8px;"><img src="{{ object.image.url }}" alt="" style="max-height:120px;border-radius:8px;"></p>
+      {% endif %}
+    </div>
+
+    <hr style="margin:20px 0; border-color:#eee;">
+    <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">دکمه اصلی (CTA) — همه اختیاری</p>
+
+    <div class="grid grid-2">
+      <div class="form-row"><label>متن دکمه</label>{{ form.cta_text }}</div>
+      <div class="form-row"><label>لینک دکمه</label>{{ form.cta_url }}</div>
+    </div>
+
+    <p style="font-size:13px; color:var(--text-muted); margin:16px 0 12px;">دکمه دوم — اختیاری</p>
+    <div class="grid grid-2">
+      <div class="form-row"><label>متن دکمه دوم</label>{{ form.cta2_text }}</div>
+      <div class="form-row"><label>لینک دکمه دوم</label>{{ form.cta2_url }}</div>
+    </div>
+
+    <hr style="margin:20px 0; border-color:#eee;">
+
+    <div class="grid grid-2">
+      <div class="form-row"><label>ترتیب نمایش</label>{{ form.order }}</div>
+      <div class="form-row" style="display:flex;align-items:center;gap:8px;margin-top:26px;">
+        {{ form.is_active }}
+        <label style="margin:0;" for="{{ form.is_active.id_for_label }}">فعال باشد</label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-gold">ذخیره</button>
+    <a href="{% url 'portal:dash_slider_list' %}" class="btn btn-outline-navy">انصراف</a>
+  </form>
+</div>
+{% endblock %}

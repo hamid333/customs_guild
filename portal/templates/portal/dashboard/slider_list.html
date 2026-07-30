@@ -1,0 +1,45 @@
+{% extends "portal/dashboard/base_dashboard.html" %}
+{% block title %}اسلایدر{% endblock %}
+{% block dash_title %}مدیریت اسلایدر صفحه اصلی{% endblock %}
+
+{% block dash_content %}
+<div style="margin-bottom:16px;">
+  <a href="{% url 'portal:dash_slider_add' %}" class="btn btn-gold btn-sm">➕ افزودن اسلاید</a>
+</div>
+
+<div class="dash-panel" style="overflow-x:auto;">
+  <table class="dash-table">
+    <thead>
+      <tr>
+        <th>ترتیب</th>
+        <th>عنوان</th>
+        <th>Eyebrow</th>
+        <th>وضعیت</th>
+        <th>عملیات</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in slides %}
+      <tr>
+        <td>{{ s.order }}</td>
+        <td>{{ s.title|default:"—" }}</td>
+        <td>{{ s.eyebrow|default:"—" }}</td>
+        <td>
+          {% if s.is_active %}
+            <span class="badge">فعال</span>
+          {% else %}
+            <span class="badge" style="background:#fdecea;color:#c0392b;">غیرفعال</span>
+          {% endif %}
+        </td>
+        <td class="table-actions">
+          <a href="{% url 'portal:dash_slider_edit' s.pk %}" class="btn btn-outline-navy btn-sm">ویرایش</a>
+          <a href="{% url 'portal:dash_slider_delete' s.pk %}" class="btn btn-danger btn-sm">حذف</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" style="text-align:center;padding:24px;">هیچ اسلایدی ثبت نشده است.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

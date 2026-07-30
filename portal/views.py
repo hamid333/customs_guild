@@ -1,13 +1,23 @@
 """
 ویوهای سایت انجمن صنفی حق‌العمل‌کاران گمرکی.
 
-بخش اول: صفحات عمومی (Home / اعضا / جست‌وجوی HS Code / اخبار / نمونه‌کارها / تماس با ما)
+بخش اول: صفحات عمومی (Home / اعضا / اعضای اصلی / جست‌وجوی HS Code / اخبار / نمونه‌کارها / تماس با ما)
 بخش دوم: داشبورد مدیریتی (ورود اطلاعات هر بخش) که فقط کاربران staff به آن دسترسی دارند.
+
+افزودن/ویرایش/حذف در داشبورد از طریق مودال (SweetAlert2) و درخواست AJAX انجام می‌شود:
+    - AjaxFormMixin  : به CreateView/UpdateView اضافه می‌شود. اگر درخواست AJAX باشد
+                       (هدر X-Requested-With: XMLHttpRequest)، به‌جای رندر صفحه‌ی کامل،
+                       فقط قطعه‌ی HTML فرم را برمی‌گرداند (برای GET) یا JSON شامل
+                       success/errors برمی‌گرداند (برای POST). برای درخواست‌های غیر AJAX
+                       (مثلاً ورود مستقیم به آدرس افزودن/ویرایش)، صفحه‌ی کامل به‌صورت معمول رندر می‌شود.
+    - AjaxDeleteMixin: مشابه، برای DeleteView.
 """
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db.models import Q
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views.generic import (
     TemplateView, ListView, DetailView, FormView,
@@ -16,9 +26,11 @@ from django.views.generic import (
 
 from .forms import (
     ContactForm, HSCodeSearchForm, MemberForm, NewsPostForm, CompletedWorkForm,
-    HSCodeForm, StyledAuthenticationForm,
+    HSCodeForm, SpecializationForm, HeroSlideForm, StyledAuthenticationForm,
 )
-from .models import Member, HSCode, NewsPost, CompletedWork, ContactMessage, Specialization
+from .models import (
+    Member, HSCode, NewsPost, CompletedWork, ContactMessage, Specialization, HeroSlide,
+)
 
 
 # =====================================================================
@@ -26,11 +38,12 @@ from .models import Member, HSCode, NewsPost, CompletedWork, ContactMessage, Spe
 # =====================================================================
 
 class HomeView(TemplateView):
-    """صفحه‌ی اصلی (Home): معرفی انجمن، آمار، آخرین اخبار و نمونه‌کارهای شاخص."""
+    """صفحه‌ی اصلی (Home): اسلایدر، معرفی انجمن، آمار، آخرین اخبار و نمونه‌کارهای شاخص."""
     template_name = "portal/home.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+        ctx["hero_slides"] = HeroSlide.objects.filter(is_active=True)
         ctx["featured_members"] = Member.objects.filter(status=Member.STATUS_ACTIVE, is_featured=True)[:6]
         ctx["latest_news"] = NewsPost.objects.filter(is_published=True)[:3]
         ctx["latest_works"] = CompletedWork.objects.all()[:4]
@@ -40,7 +53,7 @@ class HomeView(TemplateView):
 
 
 class MemberListView(ListView):
-    """صفحه‌ی اعضا: فهرست اعضای صنف به همراه زمینه‌ی فعالیت هرکدام و امکان فیلتر."""
+    """صفحه‌ی «همه‌ی اعضا»: فهرست کامل اعضای صنف به همراه زمینه‌ی فعالیت هرکدام و امکان فیلتر."""
     model = Member
     template_name = "portal/members.html"
     context_object_name = "members"
@@ -62,6 +75,19 @@ class MemberListView(ListView):
         ctx["current_q"] = self.request.GET.get("q", "")
         ctx["current_spec"] = self.request.GET.get("spec", "")
         return ctx
+
+
+class FeaturedMemberListView(ListView):
+    """صفحه‌ی «اعضای اصلی»: فقط اعضایی که برای نمایش ویژه علامت‌گذاری شده‌اند (is_featured)."""
+    model = Member
+    template_name = "portal/featured_members.html"
+    context_object_name = "members"
+
+    def get_queryset(self):
+        return (
+            Member.objects.filter(status=Member.STATUS_ACTIVE, is_featured=True)
+            .prefetch_related("specializations")
+        )
 
 
 class MemberDetailView(DetailView):
@@ -157,6 +183,78 @@ class ContactView(FormView):
 
 
 # =====================================================================
+# میکسین‌های عمومی برای ثبت/ویرایش/حذف با مودال (SweetAlert2 + AJAX)
+# =====================================================================
+
+class AjaxFormMixin:
+    """این میکسین به CreateView/UpdateView اضافه می‌شود تا امکان نمایش و ارسال فرم
+    داخل مودال SweetAlert2 فراهم شود، بدون از دست رفتن قابلیت کار با صفحه‌ی کامل
+    برای درخواست‌های غیر AJAX (fallback بدون جاوااسکریپت)."""
+
+    fragment_template_name = None   # مسیر تمپلیتی که فقط شامل ردیف‌های فیلد است (بدون تگ <form>)
+    modal_title = ""                # عنوانی که در مودال نمایش داده می‌شود
+    template_name = "portal/dashboard/generic_form_page.html"  # قالب مشترک صفحه‌ی کامل (fallback)
+
+    def is_ajax(self):
+        return self.request.headers.get("X-Requested-With") == "XMLHttpRequest"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["fragment_template"] = self.fragment_template_name
+        ctx["page_title"] = self.modal_title
+        ctx["cancel_url"] = self.get_success_url()
+        return ctx
+
+    def render_modal_fragment(self, form):
+        return render_to_string(
+            "portal/dashboard/ajax/modal_form.html",
+            {"form": form, "fragment_template": self.fragment_template_name, "object": getattr(self, "object", None)},
+            request=self.request,
+        )
+
+    def get(self, request, *args, **kwargs):
+        # برای UpdateView شیء موجود را لود می‌کنیم؛ برای CreateView مقدار None باقی می‌ماند.
+        if "pk" in self.kwargs or "slug" in self.kwargs:
+            self.object = self.get_object()
+        else:
+            self.object = None
+        if self.is_ajax():
+            form = self.get_form()
+            return HttpResponse(self.render_modal_fragment(form))
+        return super().get(request, *args, **kwargs)
+
+    def form_invalid(self, form):
+        if self.is_ajax():
+            return JsonResponse({"success": False, "html": self.render_modal_fragment(form)}, status=400)
+        return super().form_invalid(form)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if self.is_ajax():
+            return JsonResponse({"success": True})
+        return response
+
+
+class AjaxDeleteMixin:
+    """این میکسین به DeleteView اضافه می‌شود تا حذف از طریق مودال تأیید SweetAlert2
+    و درخواست AJAX نیز پشتیبانی شود؛ حذف مستقیم از طریق صفحه‌ی تأیید (بدون جاوااسکریپت) نیز کار می‌کند.
+
+    نکته‌ی نسخه: از Django 4.0 به بعد، DeleteView بر پایه‌ی FormMixin است و حذف واقعی در
+    form_valid() انجام می‌شود (نه در متد قدیمی‌تر delete())، چون BaseDeleteView.post()
+    مستقیماً form_valid() را صدا می‌زند. به همین دلیل اینجا form_valid() بازنویسی شده است."""
+
+    def is_ajax(self):
+        return self.request.headers.get("X-Requested-With") == "XMLHttpRequest"
+
+    def form_valid(self, form):
+        success_url = self.get_success_url()
+        self.object.delete()
+        if self.is_ajax():
+            return JsonResponse({"success": True})
+        return HttpResponseRedirect(success_url)
+
+
+# =====================================================================
 # داشبورد مدیریتی (Dashboard) — فقط برای کاربران staff
 # =====================================================================
 
@@ -181,6 +279,7 @@ class DashboardLogoutView(LogoutView):
 class DashboardHomeView(StaffRequiredMixin, TemplateView):
     """صفحه‌ی اصلی داشبورد: آمار کلی و دسترسی سریع به ورود اطلاعات هر بخش."""
     template_name = "portal/dashboard/home.html"
+    extra_context = {"active": "home"}
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -189,6 +288,8 @@ class DashboardHomeView(StaffRequiredMixin, TemplateView):
             "news": NewsPost.objects.count(),
             "works": CompletedWork.objects.count(),
             "hscodes": HSCode.objects.count(),
+            "specializations": Specialization.objects.count(),
+            "slides": HeroSlide.objects.count(),
             "messages": ContactMessage.objects.filter(is_read=False).count(),
         }
         return ctx
@@ -200,23 +301,26 @@ class MemberDashListView(StaffRequiredMixin, ListView):
     template_name = "portal/dashboard/member_list.html"
     context_object_name = "members"
     paginate_by = 20
+    extra_context = {"active": "members"}
 
 
-class MemberCreateView(StaffRequiredMixin, CreateView):
+class MemberCreateView(StaffRequiredMixin, AjaxFormMixin, CreateView):
     model = Member
     form_class = MemberForm
-    template_name = "portal/dashboard/member_form.html"
+    fragment_template_name = "portal/dashboard/fragments/_member_fields.html"
+    modal_title = "افزودن عضو جدید"
     success_url = reverse_lazy("portal:dash_member_list")
 
 
-class MemberUpdateView(StaffRequiredMixin, UpdateView):
+class MemberUpdateView(StaffRequiredMixin, AjaxFormMixin, UpdateView):
     model = Member
     form_class = MemberForm
-    template_name = "portal/dashboard/member_form.html"
+    fragment_template_name = "portal/dashboard/fragments/_member_fields.html"
+    modal_title = "ویرایش عضو"
     success_url = reverse_lazy("portal:dash_member_list")
 
 
-class MemberDeleteView(StaffRequiredMixin, DeleteView):
+class MemberDeleteView(StaffRequiredMixin, AjaxDeleteMixin, DeleteView):
     model = Member
     template_name = "portal/dashboard/confirm_delete.html"
     success_url = reverse_lazy("portal:dash_member_list")
@@ -228,23 +332,26 @@ class NewsDashListView(StaffRequiredMixin, ListView):
     template_name = "portal/dashboard/news_list.html"
     context_object_name = "news_items"
     paginate_by = 20
+    extra_context = {"active": "news"}
 
 
-class NewsCreateView(StaffRequiredMixin, CreateView):
+class NewsCreateView(StaffRequiredMixin, AjaxFormMixin, CreateView):
     model = NewsPost
     form_class = NewsPostForm
-    template_name = "portal/dashboard/news_form.html"
+    fragment_template_name = "portal/dashboard/fragments/_news_fields.html"
+    modal_title = "افزودن خبر جدید"
     success_url = reverse_lazy("portal:dash_news_list")
 
 
-class NewsUpdateView(StaffRequiredMixin, UpdateView):
+class NewsUpdateView(StaffRequiredMixin, AjaxFormMixin, UpdateView):
     model = NewsPost
     form_class = NewsPostForm
-    template_name = "portal/dashboard/news_form.html"
+    fragment_template_name = "portal/dashboard/fragments/_news_fields.html"
+    modal_title = "ویرایش خبر"
     success_url = reverse_lazy("portal:dash_news_list")
 
 
-class NewsDeleteView(StaffRequiredMixin, DeleteView):
+class NewsDeleteView(StaffRequiredMixin, AjaxDeleteMixin, DeleteView):
     model = NewsPost
     template_name = "portal/dashboard/confirm_delete.html"
     success_url = reverse_lazy("portal:dash_news_list")
@@ -256,23 +363,26 @@ class WorkDashListView(StaffRequiredMixin, ListView):
     template_name = "portal/dashboard/work_list.html"
     context_object_name = "works"
     paginate_by = 20
+    extra_context = {"active": "works"}
 
 
-class WorkCreateView(StaffRequiredMixin, CreateView):
+class WorkCreateView(StaffRequiredMixin, AjaxFormMixin, CreateView):
     model = CompletedWork
     form_class = CompletedWorkForm
-    template_name = "portal/dashboard/work_form.html"
+    fragment_template_name = "portal/dashboard/fragments/_work_fields.html"
+    modal_title = "افزودن نمونه‌کار"
     success_url = reverse_lazy("portal:dash_work_list")
 
 
-class WorkUpdateView(StaffRequiredMixin, UpdateView):
+class WorkUpdateView(StaffRequiredMixin, AjaxFormMixin, UpdateView):
     model = CompletedWork
     form_class = CompletedWorkForm
-    template_name = "portal/dashboard/work_form.html"
+    fragment_template_name = "portal/dashboard/fragments/_work_fields.html"
+    modal_title = "ویرایش نمونه‌کار"
     success_url = reverse_lazy("portal:dash_work_list")
 
 
-class WorkDeleteView(StaffRequiredMixin, DeleteView):
+class WorkDeleteView(StaffRequiredMixin, AjaxDeleteMixin, DeleteView):
     model = CompletedWork
     template_name = "portal/dashboard/confirm_delete.html"
     success_url = reverse_lazy("portal:dash_work_list")
@@ -284,26 +394,90 @@ class HSCodeDashListView(StaffRequiredMixin, ListView):
     template_name = "portal/dashboard/hscode_list.html"
     context_object_name = "hscodes"
     paginate_by = 20
+    extra_context = {"active": "hscodes"}
 
 
-class HSCodeCreateView(StaffRequiredMixin, CreateView):
+class HSCodeCreateView(StaffRequiredMixin, AjaxFormMixin, CreateView):
     model = HSCode
     form_class = HSCodeForm
-    template_name = "portal/dashboard/hscode_form.html"
+    fragment_template_name = "portal/dashboard/fragments/_hscode_fields.html"
+    modal_title = "افزودن ردیف تعرفه"
     success_url = reverse_lazy("portal:dash_hscode_list")
 
 
-class HSCodeUpdateView(StaffRequiredMixin, UpdateView):
+class HSCodeUpdateView(StaffRequiredMixin, AjaxFormMixin, UpdateView):
     model = HSCode
     form_class = HSCodeForm
-    template_name = "portal/dashboard/hscode_form.html"
+    fragment_template_name = "portal/dashboard/fragments/_hscode_fields.html"
+    modal_title = "ویرایش ردیف تعرفه"
     success_url = reverse_lazy("portal:dash_hscode_list")
 
 
-class HSCodeDeleteView(StaffRequiredMixin, DeleteView):
+class HSCodeDeleteView(StaffRequiredMixin, AjaxDeleteMixin, DeleteView):
     model = HSCode
     template_name = "portal/dashboard/confirm_delete.html"
     success_url = reverse_lazy("portal:dash_hscode_list")
+
+
+# ---- بخش «زمینه‌های فعالیت» در داشبورد (Specialization) --------------
+class SpecializationDashListView(StaffRequiredMixin, ListView):
+    model = Specialization
+    template_name = "portal/dashboard/specialization_list.html"
+    context_object_name = "specializations"
+    paginate_by = 30
+    extra_context = {"active": "specializations"}
+
+
+class SpecializationCreateView(StaffRequiredMixin, AjaxFormMixin, CreateView):
+    model = Specialization
+    form_class = SpecializationForm
+    fragment_template_name = "portal/dashboard/fragments/_specialization_fields.html"
+    modal_title = "افزودن زمینه‌ی فعالیت"
+    success_url = reverse_lazy("portal:dash_specialization_list")
+
+
+class SpecializationUpdateView(StaffRequiredMixin, AjaxFormMixin, UpdateView):
+    model = Specialization
+    form_class = SpecializationForm
+    fragment_template_name = "portal/dashboard/fragments/_specialization_fields.html"
+    modal_title = "ویرایش زمینه‌ی فعالیت"
+    success_url = reverse_lazy("portal:dash_specialization_list")
+
+
+class SpecializationDeleteView(StaffRequiredMixin, AjaxDeleteMixin, DeleteView):
+    model = Specialization
+    template_name = "portal/dashboard/confirm_delete.html"
+    success_url = reverse_lazy("portal:dash_specialization_list")
+
+
+# ---- بخش «اسلایدهای صفحه‌ی اصلی» در داشبورد (HeroSlide) --------------
+class SlideDashListView(StaffRequiredMixin, ListView):
+    model = HeroSlide
+    template_name = "portal/dashboard/slide_list.html"
+    context_object_name = "slides"
+    extra_context = {"active": "slides"}
+
+
+class SlideCreateView(StaffRequiredMixin, AjaxFormMixin, CreateView):
+    model = HeroSlide
+    form_class = HeroSlideForm
+    fragment_template_name = "portal/dashboard/fragments/_slide_fields.html"
+    modal_title = "افزودن اسلاید جدید"
+    success_url = reverse_lazy("portal:dash_slide_list")
+
+
+class SlideUpdateView(StaffRequiredMixin, AjaxFormMixin, UpdateView):
+    model = HeroSlide
+    form_class = HeroSlideForm
+    fragment_template_name = "portal/dashboard/fragments/_slide_fields.html"
+    modal_title = "ویرایش اسلاید"
+    success_url = reverse_lazy("portal:dash_slide_list")
+
+
+class SlideDeleteView(StaffRequiredMixin, AjaxDeleteMixin, DeleteView):
+    model = HeroSlide
+    template_name = "portal/dashboard/confirm_delete.html"
+    success_url = reverse_lazy("portal:dash_slide_list")
 
 
 # ---- بخش «پیام‌های تماس با ما» در داشبورد (فقط مشاهده / خواندن) -----
@@ -312,6 +486,7 @@ class ContactMessageDashListView(StaffRequiredMixin, ListView):
     template_name = "portal/dashboard/message_list.html"
     context_object_name = "contact_messages"
     paginate_by = 20
+    extra_context = {"active": "messages"}
 
 
 class ContactMessageDetailView(StaffRequiredMixin, DetailView):

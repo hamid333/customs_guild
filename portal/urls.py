@@ -11,6 +11,7 @@ urlpatterns = [
     # ---------------- صفحات عمومی ----------------
     path("", views.HomeView.as_view(), name="home"),
     path("members/", views.MemberListView.as_view(), name="member_list"),
+    path("members/featured/", views.FeaturedMemberListView.as_view(), name="featured_members"),
     path("members/<int:pk>/", views.MemberDetailView.as_view(), name="member_detail"),
     path("hs-code/", views.HSCodeSearchView.as_view(), name="hs_code_search"),
     path("news/", views.NewsListView.as_view(), name="news_list"),
@@ -46,6 +47,18 @@ urlpatterns = [
     path("dashboard/hs-codes/add/", views.HSCodeCreateView.as_view(), name="dash_hscode_add"),
     path("dashboard/hs-codes/<int:pk>/edit/", views.HSCodeUpdateView.as_view(), name="dash_hscode_edit"),
     path("dashboard/hs-codes/<int:pk>/delete/", views.HSCodeDeleteView.as_view(), name="dash_hscode_delete"),
+
+    # زمینه‌های فعالیت (Specialization)
+    path("dashboard/specializations/", views.SpecializationDashListView.as_view(), name="dash_specialization_list"),
+    path("dashboard/specializations/add/", views.SpecializationCreateView.as_view(), name="dash_specialization_add"),
+    path("dashboard/specializations/<int:pk>/edit/", views.SpecializationUpdateView.as_view(), name="dash_specialization_edit"),
+    path("dashboard/specializations/<int:pk>/delete/", views.SpecializationDeleteView.as_view(), name="dash_specialization_delete"),
+
+    # اسلایدهای صفحه‌ی اصلی (HeroSlide)
+    path("dashboard/slides/", views.SlideDashListView.as_view(), name="dash_slide_list"),
+    path("dashboard/slides/add/", views.SlideCreateView.as_view(), name="dash_slide_add"),
+    path("dashboard/slides/<int:pk>/edit/", views.SlideUpdateView.as_view(), name="dash_slide_edit"),
+    path("dashboard/slides/<int:pk>/delete/", views.SlideDeleteView.as_view(), name="dash_slide_delete"),
 
     # پیام‌های تماس با ما
     path("dashboard/messages/", views.ContactMessageDashListView.as_view(), name="dash_message_list"),

@@ -39,6 +39,7 @@
           <button type="button" class="nav-toggle">اعضای صنف <span class="caret"></span></button>
           <ul class="submenu">
             <li><a href="{% url 'portal:member_list' %}">فهرست همه‌ی اعضا</a></li>
+            <li><a href="{% url 'portal:featured_members' %}">اعضای اصلی</a></li>
             {% for spec in nav_specializations %}
             <li><a href="{% url 'portal:member_list' %}?spec={{ spec.slug }}">{{ spec.title }}</a></li>
             {% endfor %}
@@ -66,6 +67,7 @@
         <button type="button" class="nav-toggle">اعضای صنف <span class="caret"></span></button>
         <ul class="submenu">
           <li><a href="{% url 'portal:member_list' %}">فهرست همه‌ی اعضا</a></li>
+          <li><a href="{% url 'portal:featured_members' %}">اعضای اصلی</a></li>
           {% for spec in nav_specializations %}
           <li><a href="{% url 'portal:member_list' %}?spec={{ spec.slug }}">{{ spec.title }}</a></li>
           {% endfor %}
@@ -116,6 +118,7 @@
         <h4>دسترسی سریع</h4>
         <ul>
           <li><a href="{% url 'portal:member_list' %}">اعضای صنف</a></li>
+          <li><a href="{% url 'portal:featured_members' %}">اعضای اصلی</a></li>
           <li><a href="{% url 'portal:hs_code_search' %}">جست‌وجوی HS Code</a></li>
           <li><a href="{% url 'portal:news_list' %}">اخبار</a></li>
           <li><a href="{% url 'portal:completed_works' %}">کارهای انجام‌شده</a></li>

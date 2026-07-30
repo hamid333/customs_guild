@@ -12,7 +12,8 @@
           <div class="member-avatar" style="width:120px; height:120px; font-size:38px; margin:0 auto 16px;">{{ member.full_name|slice:":1" }}</div>
         {% endif %}
         <h1 style="font-size:20px;">{{ member.full_name }}</h1>
-        <p style="font-size:13px; margin-bottom:16px;">شماره‌ی عضویت: {{ member.membership_no }}</p>
+        <p style="font-size:13px; margin-bottom:10px;">شماره‌ی عضویت: {{ member.membership_no }}</p>
+        <p style="margin-bottom:16px;"><span class="badge badge-gold">{{ member.get_role_display }}</span></p>
         <div style="margin-bottom:16px;">
           {% for s in member.specializations.all %}<span class="badge badge-gold">{{ s.title }}</span>{% endfor %}
         </div>

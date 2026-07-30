@@ -4,15 +4,33 @@
 
 {% block content %}
 
-<!-- ============ اسلایدر تمام‌صفحه (Hero) ============ -->
+<!-- ============ اسلایدر تمام‌صفحه (Hero) — از مدل HeroSlide در داشبورد مدیریت می‌شود ============ -->
 <section class="hero-slider" aria-label="اسلایدر معرفی">
+  {% for slide in hero_slides %}
+  <div class="slide {% if forloop.first %}active{% endif %}">
+    <div class="slide-bg" {% if slide.image %}style="background-image:linear-gradient(160deg,rgba(8,21,39,.75),rgba(11,26,46,.55) 55%,rgba(16,35,59,.75)), url('{{ slide.image.url }}');"{% endif %}></div>
+    <div class="container">
+      <div class="slide-content">
+        {% if slide.eyebrow %}<p class="slide-eyebrow">{{ slide.eyebrow }}</p>{% endif %}
+        {% if slide.title %}<h1 class="slide-title">{{ slide.title }}</h1>{% endif %}
+        {% if slide.description %}<p class="slide-desc">{{ slide.description }}</p>{% endif %}
+        {% if slide.button_text and slide.button_url %}
+        <div class="slide-cta">
+          <a href="{{ slide.button_url }}" class="btn btn-gold">{{ slide.button_text }}</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <!-- اگر هنوز اسلایدی از داشبورد اضافه نشده باشد، این اسلاید پیش‌فرض نمایش داده می‌شود -->
   <div class="slide active">
     <div class="slide-bg"></div>
     <div class="container">
       <div class="slide-content">
         <p class="slide-eyebrow">انجمن صنفی حق‌العمل‌کاران گمرکی</p>
         <h1 class="slide-title">شبکه‌ای معتبر از متخصصان ترخیص کالا و امور گمرکی</h1>
-        <p class="slide-desc">معرفی اعضای رسمی صنف، زمینه‌های فعالیت هرکدام و دسترسی سریع به خدمات تخصصی ترخیص، صادرات و واردات.</p>
+        <p class="slide-desc">اسلایدهای این بخش از داشبورد مدیریتی («اسلایدر صفحه‌ی اصلی») قابل تعریف و ویرایش هستند.</p>
         <div class="slide-cta">
           <a href="{% url 'portal:member_list' %}" class="btn btn-gold">مشاهده‌ی اعضا</a>
           <a href="{% url 'portal:hs_code_search' %}" class="btn btn-outline">جست‌وجوی HS Code</a>
@@ -20,42 +38,15 @@
       </div>
     </div>
   </div>
+  {% endfor %}
 
-  <div class="slide">
-    <div class="slide-bg"></div>
-    <div class="container">
-      <div class="slide-content">
-        <p class="slide-eyebrow">جشنواره‌ی عضویت</p>
-        <h1 class="slide-title">فرصت ویژه‌ی عضویت در انجمن برای فعالان حوزه‌ی گمرکی</h1>
-        <p class="slide-desc">با عضویت رسمی، از مشاوره‌ی تخصصی، معرفی به مشتریان و پوشش اطلاع‌رسانی انجمن بهره‌مند شوید.</p>
-        <div class="slide-cta">
-          <a href="{% url 'portal:contact' %}" class="btn btn-gold">درخواست عضویت</a>
-          <a href="{% url 'portal:completed_works' %}" class="btn btn-outline">نمونه‌کارهای اعضا</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="slide">
-    <div class="slide-bg"></div>
-    <div class="container">
-      <div class="slide-content">
-        <p class="slide-eyebrow">خدمات آنلاین</p>
-        <h1 class="slide-title">جست‌وجوی سریع ردیف تعرفه‌ی گمرکی (HS Code)</h1>
-        <p class="slide-desc">با وارد کردن نام کالا یا کد تعرفه، اطلاعات مرتبط با گروه کالایی و حقوق ورودی را در سایت انجمن بیابید.</p>
-        <div class="slide-cta">
-          <a href="{% url 'portal:hs_code_search' %}" class="btn btn-gold">جست‌وجوی تعرفه</a>
-          <a href="{% url 'portal:news_list' %}" class="btn btn-outline">اخبار گمرکی</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  {% if hero_slides|length > 1 %}
   <div class="slider-controls">
     <button class="slider-arrow slider-prev" aria-label="اسلاید قبلی">‹</button>
     <div class="slider-dots"></div>
     <button class="slider-arrow slider-next" aria-label="اسلاید بعدی">›</button>
   </div>
+  {% endif %}
 </section>
 
 <!-- ============ زمینه‌های فعالیت ============ -->

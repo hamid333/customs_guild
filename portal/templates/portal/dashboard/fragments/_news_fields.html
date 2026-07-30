@@ -1,0 +1,14 @@
+<div class="form-row"><label for="{{ form.title.id_for_label }}">عنوان خبر</label>{{ form.title }}{{ form.title.errors }}</div>
+<div class="form-row"><label for="{{ form.slug.id_for_label }}">اسلاگ (بخشی از آدرس صفحه)</label>{{ form.slug }}{{ form.slug.errors }}</div>
+<div class="form-row"><label for="{{ form.summary.id_for_label }}">خلاصه‌ی خبر</label>{{ form.summary }}{{ form.summary.errors }}</div>
+<div class="form-row"><label for="{{ form.body.id_for_label }}">متن کامل خبر</label>{{ form.body }}{{ form.body.errors }}</div>
+<div class="form-row"><label for="{{ form.cover_image.id_for_label }}">تصویر شاخص</label>{{ form.cover_image }}</div>
+<div class="grid grid-2">
+  <div class="form-row">
+    <label for="{{ form.published_at.id_for_label }}">تاریخ و ساعت انتشار (شمسی)</label>
+    {{ form.published_at }}{{ form.published_at.errors }}
+  </div>
+  <div class="form-row" style="display:flex; align-items:center; gap:8px; margin-top:26px;">
+    {{ form.is_published }} <label style="margin:0;" for="{{ form.is_published.id_for_label }}">منتشر شود؟</label>
+  </div>
+</div>

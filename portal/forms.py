@@ -2,15 +2,27 @@
 فرم‌های سایت:
     - ContactForm     : فرم عمومی «تماس با ما»
     - HSCodeSearchForm: فرم جست‌وجوی ردیف تعرفه
-    - فرم‌های داشبورد برای ورود اطلاعات هر بخش (اعضا، اخبار، نمونه‌کارها، تعرفه‌ها)
+    - فرم‌های داشبورد برای ورود اطلاعات هر بخش (اعضا، اخبار، نمونه‌کارها، تعرفه‌ها، زمینه‌های فعالیت، اسلایدها)
+
+نکات:
+    - فیلدهایی با کلاس CSS «select2-field» توسط static/portal/js/dashboard.js با کتابخانه‌ی
+      Select2 مقداردهی اولیه می‌شوند.
+    - فیلدهایی با کلاس «jalali-datepicker» / «jalali-datetimepicker» یک ورودی متنی ساده هستند
+      که با persian-datepicker به تقویم شمسی مجهز می‌شوند؛ مقدار متنی توسط فرم فیلد
+      jDateField/jDateTimeField کتابخانه‌ی django-jalali پردازش و به تاریخ میلادی تبدیل می‌شود.
 """
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from .models import ContactMessage, Member, NewsPost, CompletedWork, HSCode, Specialization
 
+from .models import (
+    ContactMessage, Member, NewsPost, CompletedWork, HSCode, Specialization, HeroSlide,
+)
 
-# فیلد ورودی مشترک برای استایل یک‌دست تمام فرم‌ها
+# کلاس‌های CSS مشترک برای یک‌دستی ظاهر فرم‌ها
 TEXT_WIDGET_CLASS = "form-control"
+SELECT2_WIDGET_CLASS = "form-control select2-field"
+JALALI_DATE_CLASS = "form-control jalali-datepicker"
+JALALI_DATETIME_CLASS = "form-control jalali-datetimepicker"
 
 
 class StyledAuthenticationForm(AuthenticationForm):
@@ -54,7 +66,7 @@ class MemberForm(forms.ModelForm):
     class Meta:
         model = Member
         fields = [
-            "full_name", "membership_no", "license_no", "specializations",
+            "full_name", "membership_no", "license_no", "role", "specializations",
             "photo", "phone", "email", "city", "address", "bio",
             "established_year", "status", "is_featured",
         ]
@@ -62,14 +74,15 @@ class MemberForm(forms.ModelForm):
             "full_name": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
             "membership_no": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
             "license_no": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
-            "specializations": forms.SelectMultiple(attrs={"class": TEXT_WIDGET_CLASS}),
+            "role": forms.Select(attrs={"class": SELECT2_WIDGET_CLASS}),
+            "specializations": forms.SelectMultiple(attrs={"class": SELECT2_WIDGET_CLASS}),
             "phone": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
             "email": forms.EmailInput(attrs={"class": TEXT_WIDGET_CLASS}),
             "city": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
             "address": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
             "bio": forms.Textarea(attrs={"class": TEXT_WIDGET_CLASS, "rows": 4}),
             "established_year": forms.NumberInput(attrs={"class": TEXT_WIDGET_CLASS}),
-            "status": forms.Select(attrs={"class": TEXT_WIDGET_CLASS}),
+            "status": forms.Select(attrs={"class": SELECT2_WIDGET_CLASS}),
         }
 
 
@@ -82,7 +95,11 @@ class NewsPostForm(forms.ModelForm):
             "slug": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS, "placeholder": "مثال: khabar-jadid"}),
             "summary": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
             "body": forms.Textarea(attrs={"class": TEXT_WIDGET_CLASS, "rows": 8}),
-            "published_at": forms.DateTimeInput(attrs={"class": TEXT_WIDGET_CLASS, "type": "datetime-local"}),
+            "published_at": forms.TextInput(attrs={
+                "class": JALALI_DATETIME_CLASS,
+                "placeholder": "مثال: ۱۴۰۴/۰۵/۱۰ ۱۴:۳۰",
+                "autocomplete": "off",
+            }),
         }
 
 
@@ -92,10 +109,14 @@ class CompletedWorkForm(forms.ModelForm):
         fields = ["title", "member", "category", "description", "image", "completed_date"]
         widgets = {
             "title": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
-            "member": forms.Select(attrs={"class": TEXT_WIDGET_CLASS}),
+            "member": forms.Select(attrs={"class": SELECT2_WIDGET_CLASS}),
             "category": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
             "description": forms.Textarea(attrs={"class": TEXT_WIDGET_CLASS, "rows": 5}),
-            "completed_date": forms.DateInput(attrs={"class": TEXT_WIDGET_CLASS, "type": "date"}),
+            "completed_date": forms.TextInput(attrs={
+                "class": JALALI_DATE_CLASS,
+                "placeholder": "مثال: ۱۴۰۴/۰۵/۱۰",
+                "autocomplete": "off",
+            }),
         }
 
 
@@ -114,10 +135,45 @@ class HSCodeForm(forms.ModelForm):
 
 
 class SpecializationForm(forms.ModelForm):
+    """فرم افزودن/ویرایش دستی زمینه‌ی فعالیت (Specialization) از داشبورد."""
+
     class Meta:
         model = Specialization
         fields = ["title", "slug"]
         widgets = {
-            "title": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
-            "slug": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
+            "title": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS, "placeholder": "مثلاً: ترخیص کالای صنعتی"}),
+            "slug": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS, "placeholder": "اختیاری - در صورت خالی بودن خودکار ساخته می‌شود"}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["slug"].required = False
+
+    def clean_slug(self):
+        from django.utils.text import slugify
+        slug = self.cleaned_data.get("slug", "").strip()
+        if not slug:
+            slug = slugify(self.cleaned_data.get("title", ""), allow_unicode=True)
+        return slug
+
+
+class HeroSlideForm(forms.ModelForm):
+    """فرم مدیریت اسلایدهای اسلایدر صفحه‌ی اصلی. تمام فیلدها اختیاری هستند."""
+
+    class Meta:
+        model = HeroSlide
+        fields = ["eyebrow", "title", "description", "image", "button_text", "button_url", "order", "is_active"]
+        widgets = {
+            "eyebrow": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS, "placeholder": "مثلاً: خدمات آنلاین (اختیاری)"}),
+            "title": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS, "placeholder": "تیتر اصلی اسلاید (اختیاری)"}),
+            "description": forms.Textarea(attrs={"class": TEXT_WIDGET_CLASS, "rows": 3, "placeholder": "متن توضیح (اختیاری)"}),
+            "button_text": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS, "placeholder": "مثلاً: مشاهده‌ی اعضا (اختیاری)"}),
+            "button_url": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS, "placeholder": "/members/ یا https://... (اختیاری)"}),
+            "order": forms.NumberInput(attrs={"class": TEXT_WIDGET_CLASS}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name in self.fields:
+            if name != "is_active":
+                self.fields[name].required = False

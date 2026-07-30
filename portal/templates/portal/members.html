@@ -27,8 +27,9 @@
           <div class="member-avatar">{{ m.full_name|slice:":1" }}</div>
         {% endif %}
         <h3>{{ m.full_name }}</h3>
-        <p style="font-size:13px; margin-bottom:10px;">{{ m.city|default:"—" }} · عضویت {{ m.membership_no }}</p>
-        <div>
+        <p style="font-size:13px; margin-bottom:6px;">{{ m.city|default:"—" }} · عضویت {{ m.membership_no }}</p>
+        <span class="badge badge-gold">{{ m.get_role_display }}</span>
+        <div style="margin-top:8px;">
           {% for s in m.specializations.all %}<span class="badge">{{ s.title }}</span>{% empty %}<span class="badge">زمینه ثبت نشده</span>{% endfor %}
         </div>
         <a href="{% url 'portal:member_detail' m.pk %}" class="btn btn-outline-navy btn-sm" style="margin-top:14px;">مشاهده‌ی پروفایل</a>
