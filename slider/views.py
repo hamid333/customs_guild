@@ -5,8 +5,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 
-from .forms import SliderForm
-from .models import Slider
+from .forms import HeroSlideForm
+from .models import HeroSlide
 
 
 
@@ -56,12 +56,6 @@ class AjaxFormMixin:
 
 
 class AjaxDeleteMixin:
-    """این میکسین به DeleteView اضافه می‌شود تا حذف از طریق مودال تأیید SweetAlert2
-    و درخواست AJAX نیز پشتیبانی شود؛ حذف مستقیم از طریق صفحه‌ی تأیید (بدون جاوااسکریپت) نیز کار می‌کند.
-
-    نکته‌ی نسخه: از Django 4.0 به بعد، DeleteView بر پایه‌ی FormMixin است و حذف واقعی در
-    form_valid() انجام می‌شود (نه در متد قدیمی‌تر delete())، چون BaseDeleteView.post()
-    مستقیماً form_valid() را صدا می‌زند. به همین دلیل اینجا form_valid() بازنویسی شده است."""
 
     def is_ajax(self):
         return self.request.headers.get("X-Requested-With") == "XMLHttpRequest"
@@ -85,29 +79,29 @@ class StaffRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 
 # ---- بخش «اسلایدهای صفحه‌ی اصلی» در داشبورد (HeroSlide) --------------
 class SlideDashListView(StaffRequiredMixin, ListView):
-    model = Slider
+    model = HeroSlide
     template_name = "Slider/slide_list.html"
     context_object_name = "slides"
     extra_context = {"active": "slides"}
 
 
 class SlideCreateView(StaffRequiredMixin, AjaxFormMixin, CreateView):
-    model = Slider
-    form_class = SliderForm
+    model = HeroSlide
+    form_class = HeroSlideForm
     fragment_template_name = "Slider/fragments/_slide_fields.html"
     modal_title = "افزودن اسلاید جدید"
     success_url = reverse_lazy("slide_list")
 
 
 class SlideUpdateView(StaffRequiredMixin, AjaxFormMixin, UpdateView):
-    model = Slider
-    form_class = SliderForm
+    model = HeroSlide
+    form_class = HeroSlideForm
     fragment_template_name = "Slider/fragments/_slide_fields.html"
     modal_title = "ویرایش اسلاید"
     success_url = reverse_lazy("slide_list")
 
 
 class SlideDeleteView(StaffRequiredMixin, AjaxDeleteMixin, DeleteView):
-    model = Slider
+    model = HeroSlide
     template_name = "portal/dashboard/confirm_delete.html"
     success_url = reverse_lazy("slide_list")

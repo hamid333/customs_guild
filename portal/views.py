@@ -13,7 +13,7 @@ from django.views.generic import (
 
 from member.models import Member
 from specialization.models import Specialization
-from slider.models import Slider
+from slider.models import HeroSlide
 
 
 from .forms import (ContactForm, HSCodeSearchForm, NewsPostForm, CompletedWorkForm, HSCodeForm, StyledAuthenticationForm)
@@ -30,7 +30,7 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["hero_slides"] = Slider.objects.filter(is_active=True)
+        ctx["hero_slides"] = HeroSlide.objects.filter(is_active=True)
         ctx["featured_members"] = Member.objects.filter(status=Member.STATUS_ACTIVE, is_featured=True)[:6]
         ctx["latest_news"] = NewsPost.objects.filter(is_published=True)[:3]
         ctx["latest_works"] = CompletedWork.objects.all()[:4]
@@ -276,7 +276,7 @@ class DashboardHomeView(StaffRequiredMixin, TemplateView):
             "works": CompletedWork.objects.count(),
             "hscodes": HSCode.objects.count(),
             "specializations": Specialization.objects.count(),
-            "slides": Slider.objects.count(),
+            "slides": HeroSlide.objects.count(),
             "messages": ContactMessage.objects.filter(is_read=False).count(),
         }
         return ctx

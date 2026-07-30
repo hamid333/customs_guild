@@ -1,17 +1,17 @@
-
 from django import forms
 
-from .models import Slider
+from .models import HeroSlide
 
 # کلاس‌های CSS مشترک برای یک‌دستی ظاهر فرم‌ها
 TEXT_WIDGET_CLASS = "form-control"
 
 
-class SliderForm(forms.ModelForm):
+
+class HeroSlideForm(forms.ModelForm):
     """فرم مدیریت اسلایدهای اسلایدر صفحه‌ی اصلی. تمام فیلدها اختیاری هستند."""
 
     class Meta:
-        model = Slider
+        model = HeroSlide
         fields = ["eyebrow", "title", "description", "image", "button_text", "button_url", "order", "is_active"]
         widgets = {
             "eyebrow": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS, "placeholder": "مثلاً: خدمات آنلاین (اختیاری)"}),
@@ -27,4 +27,3 @@ class SliderForm(forms.ModelForm):
         for name in self.fields:
             if name != "is_active":
                 self.fields[name].required = False
-
