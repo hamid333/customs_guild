@@ -6,8 +6,7 @@ import django_jalali.admin as jadmin  # noqa: F401
 from django_jalali.admin.filters import JDateFieldListFilter
 
 from .models import (
-    HSCode, NewsPost, CompletedWork, ContactMessage, HeroSlide,
-)
+    HSCode, NewsPost, CompletedWork, ContactMessage)
 
 
 
@@ -39,9 +38,3 @@ class ContactMessageAdmin(admin.ModelAdmin):
     list_filter = ("is_read",)
     search_fields = ("name", "email", "subject", "message")
 
-
-@admin.register(HeroSlide)
-class HeroSlideAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "eyebrow", "order", "is_active")
-    list_editable = ("order", "is_active")
-    list_filter = ("is_active",)

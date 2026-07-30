@@ -4,7 +4,7 @@
 
 {% block dash_content %}
 <div style="margin-bottom:16px;">
-  <a href="{% url 'portal:dash_slider_add' %}" class="btn btn-gold btn-sm">➕ افزودن اسلاید</a>
+  <a href="{% url 'slide_add' %}" class="btn btn-gold btn-sm">➕ افزودن اسلاید</a>
 </div>
 
 <div class="dash-panel" style="overflow-x:auto;">
@@ -32,8 +32,8 @@
           {% endif %}
         </td>
         <td class="table-actions">
-          <a href="{% url 'portal:dash_slider_edit' s.pk %}" class="btn btn-outline-navy btn-sm">ویرایش</a>
-          <a href="{% url 'portal:dash_slider_delete' s.pk %}" class="btn btn-danger btn-sm">حذف</a>
+          <a href="{% url 'slide_edit' s.pk %}" class="btn btn-outline-navy btn-sm">ویرایش</a>
+          <a href="{% url 'slide_delete' s.pk %}" class="btn btn-danger btn-sm">حذف</a>
         </td>
       </tr>
       {% empty %}

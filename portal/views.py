@@ -13,10 +13,11 @@ from django.views.generic import (
 
 from member.models import Member
 from specialization.models import Specialization
+from slider.models import Slider
 
 
-from .forms import (ContactForm, HSCodeSearchForm, NewsPostForm, CompletedWorkForm, HSCodeForm, HeroSlideForm, StyledAuthenticationForm)
-from .models import (HSCode, NewsPost, CompletedWork, ContactMessage, HeroSlide)
+from .forms import (ContactForm, HSCodeSearchForm, NewsPostForm, CompletedWorkForm, HSCodeForm, StyledAuthenticationForm)
+from .models import (HSCode, NewsPost, CompletedWork, ContactMessage)
 
 
 # =====================================================================
@@ -29,7 +30,7 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["hero_slides"] = HeroSlide.objects.filter(is_active=True)
+        ctx["hero_slides"] = Slider.objects.filter(is_active=True)
         ctx["featured_members"] = Member.objects.filter(status=Member.STATUS_ACTIVE, is_featured=True)[:6]
         ctx["latest_news"] = NewsPost.objects.filter(is_published=True)[:3]
         ctx["latest_works"] = CompletedWork.objects.all()[:4]
@@ -275,7 +276,7 @@ class DashboardHomeView(StaffRequiredMixin, TemplateView):
             "works": CompletedWork.objects.count(),
             "hscodes": HSCode.objects.count(),
             "specializations": Specialization.objects.count(),
-            "slides": HeroSlide.objects.count(),
+            "slides": Slider.objects.count(),
             "messages": ContactMessage.objects.filter(is_read=False).count(),
         }
         return ctx
@@ -374,35 +375,6 @@ class HSCodeDeleteView(StaffRequiredMixin, AjaxDeleteMixin, DeleteView):
     success_url = reverse_lazy("portal:dash_hscode_list")
 
 
-
-# ---- بخش «اسلایدهای صفحه‌ی اصلی» در داشبورد (HeroSlide) --------------
-class SlideDashListView(StaffRequiredMixin, ListView):
-    model = HeroSlide
-    template_name = "portal/dashboard/slide_list.html"
-    context_object_name = "slides"
-    extra_context = {"active": "slides"}
-
-
-class SlideCreateView(StaffRequiredMixin, AjaxFormMixin, CreateView):
-    model = HeroSlide
-    form_class = HeroSlideForm
-    fragment_template_name = "portal/dashboard/fragments/_slide_fields.html"
-    modal_title = "افزودن اسلاید جدید"
-    success_url = reverse_lazy("portal:dash_slide_list")
-
-
-class SlideUpdateView(StaffRequiredMixin, AjaxFormMixin, UpdateView):
-    model = HeroSlide
-    form_class = HeroSlideForm
-    fragment_template_name = "portal/dashboard/fragments/_slide_fields.html"
-    modal_title = "ویرایش اسلاید"
-    success_url = reverse_lazy("portal:dash_slide_list")
-
-
-class SlideDeleteView(StaffRequiredMixin, AjaxDeleteMixin, DeleteView):
-    model = HeroSlide
-    template_name = "portal/dashboard/confirm_delete.html"
-    success_url = reverse_lazy("portal:dash_slide_list")
 
 
 # ---- بخش «پیام‌های تماس با ما» در داشبورد (فقط مشاهده / خواندن) -----

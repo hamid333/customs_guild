@@ -24,11 +24,6 @@ urlpatterns = [
     path("dashboard/logout/", views.DashboardLogoutView.as_view(), name="dashboard_logout"),
     path("dashboard/", views.DashboardHomeView.as_view(), name="dashboard_home"),
     #
-    # # اعضا
-    # path("dashboard/members/", views.MemberDashListView.as_view(), name="dash_member_list"),
-    # path("dashboard/members/add/", views.MemberCreateView.as_view(), name="dash_member_add"),
-    # path("dashboard/members/<int:pk>/edit/", views.MemberUpdateView.as_view(), name="dash_member_edit"),
-    # path("dashboard/members/<int:pk>/delete/", views.MemberDeleteView.as_view(), name="dash_member_delete"),
 
     # اخبار
     path("dashboard/news/", views.NewsDashListView.as_view(), name="dash_news_list"),
@@ -49,11 +44,11 @@ urlpatterns = [
     path("dashboard/hs-codes/<int:pk>/delete/", views.HSCodeDeleteView.as_view(), name="dash_hscode_delete"),
 
 
-    # اسلایدهای صفحه‌ی اصلی (HeroSlide)
-    path("dashboard/slides/", views.SlideDashListView.as_view(), name="dash_slide_list"),
-    path("dashboard/slides/add/", views.SlideCreateView.as_view(), name="dash_slide_add"),
-    path("dashboard/slides/<int:pk>/edit/", views.SlideUpdateView.as_view(), name="dash_slide_edit"),
-    path("dashboard/slides/<int:pk>/delete/", views.SlideDeleteView.as_view(), name="dash_slide_delete"),
+    # # اسلایدهای صفحه‌ی اصلی (HeroSlide)
+    # path("dashboard/slides/", views.SlideDashListView.as_view(), name="dash_slide_list"),
+    # path("dashboard/slides/add/", views.SlideCreateView.as_view(), name="dash_slide_add"),
+    # path("dashboard/slides/<int:pk>/edit/", views.SlideUpdateView.as_view(), name="dash_slide_edit"),
+    # path("dashboard/slides/<int:pk>/delete/", views.SlideDeleteView.as_view(), name="dash_slide_delete"),
 
     # پیام‌های تماس با ما
     path("dashboard/messages/", views.ContactMessageDashListView.as_view(), name="dash_message_list"),
