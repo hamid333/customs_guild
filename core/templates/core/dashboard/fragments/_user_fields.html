@@ -1,0 +1,26 @@
+<div class="form-row">
+  <label for="{{ form.username.id_for_label }}">نام کاربری</label>
+  {{ form.username }}{{ form.username.errors }}
+</div>
+<div class="grid grid-2">
+  <div class="form-row"><label for="{{ form.email.id_for_label }}">ایمیل</label>{{ form.email }}</div>
+  <div class="form-row">
+    <label for="{{ form.password.id_for_label }}">رمز عبور</label>
+    {{ form.password }}{{ form.password.errors }}
+  </div>
+</div>
+<div class="grid grid-2">
+  <div class="form-row" style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+    {{ form.is_active }} <label style="margin:0;" for="{{ form.is_active.id_for_label }}">حساب فعال باشد؟</label>
+  </div>
+  <div class="form-row" style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+    {{ form.is_superuser }} <label style="margin:0;" for="{{ form.is_superuser.id_for_label }}">مدیر کل</label>
+  </div>
+</div>
+<p class="help-text" style="margin-bottom:6px;">{{ form.is_superuser.help_text }}</p>
+<div class="form-row">
+  <label>بخش‌های قابل دسترس</label>
+  <div class="checkbox-grid">
+    {{ form.sections }}
+  </div>
+</div>

@@ -1,0 +1,30 @@
+{% extends "core/dashboard/base_dashboard.html" %}
+{% block title %}پیام‌های تماس{% endblock %}
+{% block dash_title %}پیام‌های فرم تماس با ما{% endblock %}
+
+{% block dash_content %}
+<div class="dash-panel" style="overflow-x:auto;">
+  <table class="dash-table">
+    <thead><tr><th>نام</th><th>موضوع</th><th>ایمیل</th><th>تاریخ</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for msg in contact_messages %}
+      <tr>
+        <td>{{ msg.name }}</td>
+        <td>{{ msg.subject }}</td>
+        <td style="direction:ltr; text-align:right;">{{ msg.email }}</td>
+        <td>{{ msg.created_at|date:"Y/m/d H:i" }}</td>
+        <td>{% if msg.is_read %}<span class="badge">خوانده‌شده</span>{% else %}<span class="badge badge-gold">جدید</span>{% endif %}</td>
+        <td class="table-actions"><a href="{% url 'contact:dash_message_detail' msg.pk %}" class="btn btn-outline-navy btn-sm">مشاهده</a></td>
+      </tr>
+      {% empty %}<tr><td colspan="6" style="text-align:center; padding:24px;">پیامی دریافت نشده است.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if is_paginated %}
+<div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+  {% if page_obj.has_previous %}<a class="btn btn-outline-navy btn-sm" href="?page={{ page_obj.previous_page_number }}">قبلی</a>{% endif %}
+  <span style="align-self:center; font-size:13px; color:var(--text-muted);">صفحه‌ی {{ page_obj.number }} از {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a class="btn btn-outline-navy btn-sm" href="?page={{ page_obj.next_page_number }}">بعدی</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

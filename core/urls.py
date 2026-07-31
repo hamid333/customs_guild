@@ -1,20 +1,19 @@
-"""
-مسیرهای اصلی پروژه.
-همه‌ی صفحات سایت داخل اپ portal تعریف شده‌اند.
-"""
-from django.contrib import admin
-from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
+from django.urls import path
+
+from . import views
+
+app_name = "core"
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", include("portal.urls", namespace="portal")),
-    path("dashboard/Specializations/", include("specialization.urls")),
-    path("dashboard/Member/", include("member.urls")),
-    path("dashboard/Slider/", include("slider.urls")),
-]
+    path("", views.HomeView.as_view(), name="home"),
 
-# نمایش فایل‌های مدیا (تصاویر) در حالت توسعه (DEBUG)
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path("dashboard/login/", views.DashboardLoginView.as_view(), name="dashboard_login"),
+    path("dashboard/logout/", views.DashboardLogoutView.as_view(), name="dashboard_logout"),
+    path("dashboard/", views.DashboardHomeView.as_view(), name="dashboard_home"),
+
+    # مدیریت کاربران داشبورد + دسترسی بخش‌ها
+    path("dashboard/users/", views.UserDashListView.as_view(), name="dash_user_list"),
+    path("dashboard/users/add/", views.UserCreateView.as_view(), name="dash_user_add"),
+    path("dashboard/users/<int:pk>/edit/", views.UserUpdateView.as_view(), name="dash_user_edit"),
+    path("dashboard/users/<int:pk>/delete/", views.UserDeleteView.as_view(), name="dash_user_delete"),
+]

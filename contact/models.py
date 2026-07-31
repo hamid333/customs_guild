@@ -1,0 +1,22 @@
+"""مدل پیام تماس با ما (ContactMessage)."""
+from django.db import models
+
+
+class ContactMessage(models.Model):
+    """پیام ارسالی از فرم «تماس با ما»."""
+
+    name = models.CharField("نام و نام خانوادگی", max_length=150)
+    email = models.EmailField("ایمیل")
+    phone = models.CharField("تلفن", max_length=20, blank=True)
+    subject = models.CharField("موضوع", max_length=200)
+    message = models.TextField("متن پیام")
+    created_at = models.DateTimeField("تاریخ ارسال", auto_now_add=True)
+    is_read = models.BooleanField("خوانده‌شده", default=False)
+
+    class Meta:
+        verbose_name = "پیام تماس با ما"
+        verbose_name_plural = "پیام‌های تماس با ما"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.name} — {self.subject}"

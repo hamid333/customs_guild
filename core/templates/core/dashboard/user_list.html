@@ -1,0 +1,46 @@
+{% extends "core/dashboard/base_dashboard.html" %}
+{% block title %}کاربران و دسترسی‌ها{% endblock %}
+{% block dash_title %}مدیریت کاربران داشبورد و دسترسی بخش‌ها{% endblock %}
+
+{% block dash_content %}
+<p class="help-text" style="margin-bottom:16px;">
+  از این بخش می‌توانید برای همکاران خود حساب کاربری داشبورد بسازید و مشخص کنید هرکدام
+  به کدام بخش‌ها (اعضا، اخبار، نمونه‌کارها، ردیف‌های تعرفه، اسلایدر، زمینه‌های فعالیت،
+  پیام‌های تماس، یا حتی مدیریت کاربران) دسترسی داشته باشند. کاربر «مدیر کل» همیشه به
+  همه‌ی بخش‌ها دسترسی کامل دارد.
+</p>
+<div style="margin-bottom:16px;">
+  <button type="button" class="btn btn-gold btn-sm" data-modal-form
+          data-url="{% url 'core:dash_user_add' %}" data-title="افزودن کاربر جدید">➕ افزودن کاربر جدید</button>
+</div>
+<div class="dash-panel" style="overflow-x:auto;">
+  <table class="dash-table">
+    <thead><tr><th>نام کاربری</th><th>ایمیل</th><th>نوع</th><th>بخش‌های مجاز</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+    <tbody>
+      {% for u in dash_users %}
+      <tr>
+        <td>{{ u.username }}{% if u.pk == request.user.pk %} <span class="badge">شما</span>{% endif %}</td>
+        <td style="direction:ltr; text-align:right;">{{ u.email|default:"—" }}</td>
+        <td>{% if u.is_superuser %}<span class="badge badge-gold">مدیر کل</span>{% else %}<span class="badge">کاربر محدود</span>{% endif %}</td>
+        <td>
+          {% if u.is_superuser %}
+            <span class="badge badge-gold">همه‌ی بخش‌ها</span>
+          {% else %}
+            {% for label in u.dashboard_access.section_labels %}<span class="badge">{{ label }}</span>{% empty %}<span class="badge" style="background:#fdecea; color:#c0392b;">بدون دسترسی</span>{% endfor %}
+          {% endif %}
+        </td>
+        <td>{% if u.is_active %}<span class="badge">فعال</span>{% else %}<span class="badge" style="background:#fdecea; color:#c0392b;">غیرفعال</span>{% endif %}</td>
+        <td class="table-actions">
+          <button type="button" class="btn btn-outline-navy btn-sm" data-modal-form
+                  data-url="{% url 'core:dash_user_edit' u.pk %}" data-title="ویرایش کاربر و دسترسی‌ها">ویرایش / دسترسی‌ها</button>
+          {% if u.pk != request.user.pk %}
+          <button type="button" class="btn btn-danger btn-sm" data-modal-delete
+                  data-url="{% url 'core:dash_user_delete' u.pk %}" data-name="{{ u.username }}">حذف</button>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="6" style="text-align:center; padding:24px;">هیچ کاربر staff‌ای ثبت نشده است.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

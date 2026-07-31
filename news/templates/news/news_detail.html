@@ -1,0 +1,21 @@
+{% extends "core/base.html" %}
+{% block title %}{{ news.title }} | {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<section class="section" style="margin-top:78px;">
+  <div class="container" style="max-width:800px;">
+    <p class="eyebrow">{{ news.published_at|date:"Y/m/d" }}</p>
+    <h1 style="margin-bottom:22px;">{{ news.title }}</h1>
+    {% if news.cover_image %}
+    <div class="card-thumb" style="height:320px; border-radius:14px; margin-bottom:26px;">
+      <img src="{{ news.cover_image.url }}" alt="{{ news.title }}">
+    </div>
+    {% endif %}
+    <div style="font-size:15.5px; color:var(--text-dark); line-height:2.1; white-space:pre-line;">{{ news.body }}</div>
+
+    <div style="margin-top:36px;">
+      <a href="{% url 'news:news_list' %}" class="btn btn-outline-navy btn-sm">بازگشت به فهرست اخبار</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

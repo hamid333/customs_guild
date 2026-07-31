@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ورود به داشبورد | {{ SITE_NAME }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+</head>
+<body style="background:linear-gradient(160deg,#081527,#0b1a2e 55%,#10233b); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;">
+  <div class="card" style="max-width:400px; width:100%; padding:36px;">
+    <div style="text-align:center; margin-bottom:24px;">
+      <svg width="52" height="52" viewBox="0 0 48 48" fill="none" style="margin:0 auto 10px;">
+        <circle cx="24" cy="24" r="22" fill="#0b1a2e" stroke="#c9a94e" stroke-width="1.6"/>
+        <path d="M14 28 L14 20 L24 13 L34 20 L34 28" fill="none" stroke="#e2c988" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/>
+        <path d="M11 28 H37" stroke="#e2c988" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+      <h1 style="font-size:19px;">ورود به داشبورد مدیریت</h1>
+      <p style="font-size:13px;">{{ SITE_NAME }}</p>
+    </div>
+
+    {% if form.errors %}
+      <div class="alert alert-error">نام کاربری یا رمز عبور نادرست است.</div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-row">
+        <label for="{{ form.username.id_for_label }}">نام کاربری</label>
+        {{ form.username }}
+      </div>
+      <div class="form-row">
+        <label for="{{ form.password.id_for_label }}">رمز عبور</label>
+        {{ form.password }}
+      </div>
+      <input type="hidden" name="next" value="{{ next }}">
+      <button type="submit" class="btn btn-gold btn-block">ورود</button>
+    </form>
+    <p style="text-align:center; margin-top:18px;"><a href="{% url 'core:home' %}" style="font-size:13px; color:var(--copper);">بازگشت به سایت</a></p>
+  </div>
+</body>
+</html>
