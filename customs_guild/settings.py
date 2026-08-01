@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",  # برای نمایش بهتر تاریخ/اعداد در قالب‌ها
 
     "django_jalali",  # پشتیبانی از تاریخ شمسی (jDateField / jDateTimeField) + ویجت‌های ادمین
+    "ckeditor",        # ویرایشگر متن غنی (Rich Text) — برای سوابق فعالیت اعضا
 
     # اپ‌های سایت — هرکدام مسئول یک بخش مستقل هستند
     "core",              # صفحه‌ی اصلی، ورود/خروج داشبورد، مدیریت کاربران و دسترسی‌ها
@@ -46,7 +47,6 @@ INSTALLED_APPS = [
     "works",                 # کارهای انجام‌شده (به members وابسته است)
     "contact",                # پیام‌های تماس با ما
     "sliders",                 # اسلایدهای صفحه‌ی اصلی
-    "testsnew",                 # اسلایدهای صفحه‌ی اصلی
 ]
 
 MIDDLEWARE = [
@@ -87,6 +87,7 @@ ASGI_APPLICATION = "customs_guild.asgi.application"
 # پایگاه داده / Database
 # برای سادگی از SQLite استفاده شده؛ برای production می‌توانید به PostgreSQL سوییچ کنید.
 # ------------------------------------------------------------------
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -139,3 +140,29 @@ SITE_NAME = "انجمن صنفی حق‌العمل‌کاران گمرکی"
 SITE_PHONE = "021-88112233"
 SITE_EMAIL = "info@customs-guild.example"
 SITE_ADDRESS = "تهران، خیابان گمرک، ساختمان مرکزی انجمن، طبقه‌ی سوم"
+
+# ------------------------------------------------------------------
+# CKEditor — برای ویرایش زیبا و غنی (Rich Text) سوابق فعالیت اعضا (Member.bio)
+# ------------------------------------------------------------------
+CKEDITOR_CONFIGS = {
+    "default": {
+        "toolbar": "Custom",
+        "toolbar_Custom": [
+            ["Format"],
+            ["Bold", "Italic", "Underline", "Strike"],
+            ["TextColor", "BGColor"],
+            ["NumberedList", "BulletedList", "-", "Outdent", "Indent", "-", "Blockquote"],
+            ["JustifyLeft", "JustifyCenter", "JustifyRight"],
+            ["Link", "Unlink"],
+            ["Image", "Table", "HorizontalRule"],
+            ["Undo", "Redo"],
+            ["Source"],
+        ],
+        "height": 260,
+        "width": "100%",
+        # پشتیبانی از راست‌به‌چپ برای محتوای فارسی
+        "language": "fa",
+        "contentsLangDirection": "rtl",
+    },
+}
+

@@ -32,6 +32,7 @@ class NewsDetailView(DetailView):
 
 class NewsDashListView(SectionAccessRequiredMixin, ListView):
     required_section = "news"
+    required_action = "view"
     model = NewsPost
     template_name = "news/dashboard/news_list.html"
     context_object_name = "news_items"
@@ -41,6 +42,7 @@ class NewsDashListView(SectionAccessRequiredMixin, ListView):
 
 class NewsCreateView(SectionAccessRequiredMixin, AjaxFormMixin, CreateView):
     required_section = "news"
+    required_action = "add"
     model = NewsPost
     form_class = NewsPostForm
     fragment_template_name = "news/dashboard/fragments/_news_fields.html"
@@ -50,6 +52,7 @@ class NewsCreateView(SectionAccessRequiredMixin, AjaxFormMixin, CreateView):
 
 class NewsUpdateView(SectionAccessRequiredMixin, AjaxFormMixin, UpdateView):
     required_section = "news"
+    required_action = "edit"
     model = NewsPost
     form_class = NewsPostForm
     fragment_template_name = "news/dashboard/fragments/_news_fields.html"
@@ -59,6 +62,7 @@ class NewsUpdateView(SectionAccessRequiredMixin, AjaxFormMixin, UpdateView):
 
 class NewsDeleteView(SectionAccessRequiredMixin, AjaxDeleteMixin, DeleteView):
     required_section = "news"
+    required_action = "delete"
     model = NewsPost
     template_name = "core/dashboard/confirm_delete.html"
     success_url = reverse_lazy("news:dash_news_list")

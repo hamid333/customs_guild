@@ -34,6 +34,7 @@ class HSCodeSearchView(ListView):
 
 class HSCodeDashListView(SectionAccessRequiredMixin, ListView):
     required_section = "hscodes"
+    required_action = "view"
     model = HSCode
     template_name = "hscodes/dashboard/hscode_list.html"
     context_object_name = "hscodes"
@@ -43,6 +44,7 @@ class HSCodeDashListView(SectionAccessRequiredMixin, ListView):
 
 class HSCodeCreateView(SectionAccessRequiredMixin, AjaxFormMixin, CreateView):
     required_section = "hscodes"
+    required_action = "add"
     model = HSCode
     form_class = HSCodeForm
     fragment_template_name = "hscodes/dashboard/fragments/_hscode_fields.html"
@@ -52,6 +54,7 @@ class HSCodeCreateView(SectionAccessRequiredMixin, AjaxFormMixin, CreateView):
 
 class HSCodeUpdateView(SectionAccessRequiredMixin, AjaxFormMixin, UpdateView):
     required_section = "hscodes"
+    required_action = "edit"
     model = HSCode
     form_class = HSCodeForm
     fragment_template_name = "hscodes/dashboard/fragments/_hscode_fields.html"
@@ -61,6 +64,7 @@ class HSCodeUpdateView(SectionAccessRequiredMixin, AjaxFormMixin, UpdateView):
 
 class HSCodeDeleteView(SectionAccessRequiredMixin, AjaxDeleteMixin, DeleteView):
     required_section = "hscodes"
+    required_action = "delete"
     model = HSCode
     template_name = "core/dashboard/confirm_delete.html"
     success_url = reverse_lazy("hscodes:dash_hscode_list")

@@ -26,7 +26,11 @@
   <div class="form-row"><label for="{{ form.established_year.id_for_label }}">سال شروع فعالیت</label>{{ form.established_year }}</div>
 </div>
 <div class="form-row"><label for="{{ form.address.id_for_label }}">آدرس دفتر</label>{{ form.address }}</div>
-<div class="form-row"><label for="{{ form.bio.id_for_label }}">درباره / سوابق فعالیت</label>{{ form.bio }}</div>
+<div class="form-row">
+  <label for="{{ form.bio.id_for_label }}">درباره / سوابق فعالیت</label>
+  {{ form.bio }}
+  <p class="help-text">{{ form.bio.help_text }}</p>
+</div>
 <div class="grid grid-2">
   <div class="form-row"><label for="{{ form.status.id_for_label }}">وضعیت عضویت</label>{{ form.status }}</div>
   <div class="form-row" style="display:flex; align-items:center; gap:8px; margin-top:26px;">

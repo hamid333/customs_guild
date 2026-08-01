@@ -1,4 +1,5 @@
 from django import forms
+from ckeditor.widgets import CKEditorWidget
 
 from .models import Member
 
@@ -7,6 +8,13 @@ SELECT2_WIDGET_CLASS = "form-control select2-field"
 
 
 class MemberForm(forms.ModelForm):
+    bio = forms.CharField(
+        label="درباره / سوابق فعالیت",
+        required=False,
+        widget=CKEditorWidget(config_name="default"),
+        help_text="هر عضو می‌تواند سوابق فعالیت خودش را با متن غنی (تیتر، لیست، رنگ، تصویر و ...) زیبا طراحی کند.",
+    )
+
     class Meta:
         model = Member
         fields = [
@@ -24,7 +32,6 @@ class MemberForm(forms.ModelForm):
             "email": forms.EmailInput(attrs={"class": TEXT_WIDGET_CLASS}),
             "city": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
             "address": forms.TextInput(attrs={"class": TEXT_WIDGET_CLASS}),
-            "bio": forms.Textarea(attrs={"class": TEXT_WIDGET_CLASS, "rows": 4}),
             "established_year": forms.NumberInput(attrs={"class": TEXT_WIDGET_CLASS}),
             "status": forms.Select(attrs={"class": SELECT2_WIDGET_CLASS}),
         }

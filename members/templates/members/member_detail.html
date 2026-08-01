@@ -27,7 +27,11 @@
 
       <div>
         <h2 style="margin-bottom:14px;">درباره</h2>
-        <p style="margin-bottom:28px;">{{ member.bio|default:"اطلاعاتی درباره‌ی سوابق فعالیت این عضو ثبت نشده است." }}</p>
+        {% if member.bio %}
+          <div class="member-bio-content">{{ member.bio|safe }}</div>
+        {% else %}
+          <p style="margin-bottom:28px;">اطلاعاتی درباره‌ی سوابق فعالیت این عضو ثبت نشده است.</p>
+        {% endif %}
 
         <h2 style="margin-bottom:14px;">نمونه‌کارهای این عضو</h2>
         <div class="grid grid-2">

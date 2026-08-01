@@ -1,9 +1,9 @@
 """ویوهای عمومی و داشبورد برای تماس با ما."""
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.views.generic import FormView, ListView, DetailView
+from django.views.generic import FormView, ListView, DetailView, DeleteView
 
-from core.mixins import SectionAccessRequiredMixin
+from core.mixins import SectionAccessRequiredMixin, AjaxDeleteMixin
 
 from .forms import ContactForm
 from .models import ContactMessage
@@ -23,6 +23,7 @@ class ContactView(FormView):
 
 class ContactMessageDashListView(SectionAccessRequiredMixin, ListView):
     required_section = "contact"
+    required_action = "view"
     model = ContactMessage
     template_name = "contact/dashboard/message_list.html"
     context_object_name = "contact_messages"
@@ -32,6 +33,7 @@ class ContactMessageDashListView(SectionAccessRequiredMixin, ListView):
 
 class ContactMessageDetailView(SectionAccessRequiredMixin, DetailView):
     required_section = "contact"
+    required_action = "view"
     model = ContactMessage
     template_name = "contact/dashboard/message_detail.html"
     context_object_name = "contact_message"
@@ -43,3 +45,11 @@ class ContactMessageDetailView(SectionAccessRequiredMixin, DetailView):
             self.object.is_read = True
             self.object.save(update_fields=["is_read"])
         return response
+
+
+class ContactMessageDeleteView(SectionAccessRequiredMixin, AjaxDeleteMixin, DeleteView):
+    required_section = "contact"
+    required_action = "delete"
+    model = ContactMessage
+    template_name = "core/dashboard/confirm_delete.html"
+    success_url = reverse_lazy("contact:dash_message_list")

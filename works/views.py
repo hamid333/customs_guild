@@ -33,6 +33,7 @@ class CompletedWorkListView(ListView):
 
 class WorkDashListView(SectionAccessRequiredMixin, ListView):
     required_section = "works"
+    required_action = "view"
     model = CompletedWork
     template_name = "works/dashboard/work_list.html"
     context_object_name = "works"
@@ -42,6 +43,7 @@ class WorkDashListView(SectionAccessRequiredMixin, ListView):
 
 class WorkCreateView(SectionAccessRequiredMixin, AjaxFormMixin, CreateView):
     required_section = "works"
+    required_action = "add"
     model = CompletedWork
     form_class = CompletedWorkForm
     fragment_template_name = "works/dashboard/fragments/_work_fields.html"
@@ -51,6 +53,7 @@ class WorkCreateView(SectionAccessRequiredMixin, AjaxFormMixin, CreateView):
 
 class WorkUpdateView(SectionAccessRequiredMixin, AjaxFormMixin, UpdateView):
     required_section = "works"
+    required_action = "edit"
     model = CompletedWork
     form_class = CompletedWorkForm
     fragment_template_name = "works/dashboard/fragments/_work_fields.html"
@@ -60,6 +63,7 @@ class WorkUpdateView(SectionAccessRequiredMixin, AjaxFormMixin, UpdateView):
 
 class WorkDeleteView(SectionAccessRequiredMixin, AjaxDeleteMixin, DeleteView):
     required_section = "works"
+    required_action = "delete"
     model = CompletedWork
     template_name = "core/dashboard/confirm_delete.html"
     success_url = reverse_lazy("works:dash_work_list")

@@ -141,11 +141,14 @@ class Command(BaseCommand):
             editor.set_password("editor12345")
             editor.save()
         DashboardAccess.objects.update_or_create(
-            user=editor, defaults={"sections": ["news", "works"]}
+            user=editor, defaults={"permissions": {
+                "news": ["view", "add", "edit", "delete"],
+                "works": ["view", "add", "edit"],
+            }}
         )
 
         self.stdout.write(self.style.SUCCESS("داده‌ی نمونه با موفقیت ایجاد شد."))
         self.stdout.write(self.style.WARNING(
             "کاربر نمونه با دسترسی محدود ساخته شد: news-editor / editor12345 "
-            "(فقط دسترسی به بخش‌های «اخبار» و «کارهای انجام‌شده»)."
+            "(دسترسی کامل به «اخبار»، و افزودن/ویرایش در «کارهای انجام‌شده» بدون حذف)."
         ))

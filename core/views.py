@@ -3,7 +3,7 @@
     - HomeView: صفحه‌ی اصلی سایت (اسلایدر + آمار + آخرین اخبار/نمونه‌کارها) — داده‌ها را
       از اپ‌های دیگر (sliders، members، news، works، specializations) جمع می‌کند.
     - DashboardLoginView / DashboardLogoutView / DashboardHomeView
-    - مدیریت کاربران داشبورد (افزودن/ویرایش/حذف + تعیین دسترسی بخش‌ها)
+    - مدیریت کاربران داشبورد (افزودن/ویرایش/حذف + تعیین دقیق دسترسی هر بخش×عملیات)
 """
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -17,6 +17,7 @@ from django.views.generic import TemplateView, ListView, DeleteView
 
 from .forms import StyledAuthenticationForm, DashboardUserForm
 from .mixins import StaffRequiredMixin, SectionAccessRequiredMixin, AjaxDeleteMixin
+from .models import DashboardAccess, DASHBOARD_ACTIONS, get_dashboard_sections
 
 User = get_user_model()
 
@@ -81,14 +82,42 @@ class DashboardHomeView(StaffRequiredMixin, TemplateView):
 
 
 # =====================================================================
-# مدیریت کاربران داشبورد (افزودن/ویرایش/حذف + تعیین دسترسی بخش‌ها)
+# مدیریت کاربران داشبورد (افزودن/ویرایش/حذف + ماتریس دقیق دسترسی بخش×عملیات)
 # =====================================================================
 
 class UserAccessRequiredMixin(SectionAccessRequiredMixin):
     required_section = "users"
+    # required_action هر ویو پایین‌تر جداگانه ست می‌شود (view/add/edit/delete)
+
+
+def _build_permission_matrix(current_permissions):
+    """ساخت داده‌ی آماده برای رندر جدول دسترسی در قالب: هر بخش یک ردیف، هر عملیات یک ستون."""
+    matrix = []
+    for slug, label in get_dashboard_sections():
+        current_actions = set((current_permissions or {}).get(slug, []))
+        matrix.append({
+            "slug": slug,
+            "label": label,
+            "actions": [
+                {"slug": a["slug"], "label": a["label"], "checked": a["slug"] in current_actions}
+                for a in DASHBOARD_ACTIONS
+            ],
+        })
+    return matrix
+
+
+def _read_permissions_from_post(post_data):
+    """خواندن چک‌باکس‌های perm_<section>_<action> از POST و ساخت دیکشنری دسترسی."""
+    permissions = {}
+    for slug, _label in get_dashboard_sections():
+        actions = [a["slug"] for a in DASHBOARD_ACTIONS if post_data.get(f"perm_{slug}_{a['slug']}")]
+        if actions:
+            permissions[slug] = actions
+    return permissions
 
 
 class UserDashListView(UserAccessRequiredMixin, ListView):
+    required_action = "view"
     model = User
     template_name = "core/dashboard/user_list.html"
     context_object_name = "dash_users"
@@ -109,70 +138,85 @@ class _UserFormAjaxHelper:
     def is_ajax(self):
         return self.request.headers.get("X-Requested-With") == "XMLHttpRequest"
 
-    def render_modal_fragment(self, form):
-        return render_to_string(
-            "core/dashboard/ajax/modal_form.html",
-            {"form": form, "fragment_template": self.fragment_template_name},
-            request=self.request,
-        )
+    def render_modal_fragment(self, form, extra=None):
+        ctx = {"form": form, "fragment_template": self.fragment_template_name}
+        ctx.update(extra or {})
+        return render_to_string("core/dashboard/ajax/modal_form.html", ctx, request=self.request)
 
-    def render_full_page(self, form, page_title):
-        return render(self.request, "core/dashboard/generic_form_page.html", {
+    def render_full_page(self, form, page_title, extra=None):
+        ctx = {
             "form": form,
             "fragment_template": self.fragment_template_name,
             "page_title": page_title,
             "cancel_url": self.success_url,
             "active": "users",
-        })
+        }
+        ctx.update(extra or {})
+        return render(self.request, "core/dashboard/generic_form_page.html", ctx)
 
 
 class UserCreateView(UserAccessRequiredMixin, _UserFormAjaxHelper, View):
+    required_action = "add"
     page_title = "افزودن کاربر جدید"
 
     def get(self, request):
         form = DashboardUserForm()
+        extra = {"permission_matrix": _build_permission_matrix({})}
         if self.is_ajax():
-            return HttpResponse(self.render_modal_fragment(form))
-        return self.render_full_page(form, self.page_title)
+            return HttpResponse(self.render_modal_fragment(form, extra))
+        return self.render_full_page(form, self.page_title, extra)
 
     def post(self, request):
         form = DashboardUserForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            DashboardAccess.objects.update_or_create(
+                user=user, defaults={"permissions": _read_permissions_from_post(request.POST)}
+            )
             if self.is_ajax():
                 return JsonResponse({"success": True})
             messages.success(request, "کاربر با موفقیت ایجاد شد.")
             return redirect(self.success_url)
+        extra = {"permission_matrix": _build_permission_matrix({})}
         if self.is_ajax():
-            return JsonResponse({"success": False, "html": self.render_modal_fragment(form)}, status=400)
-        return self.render_full_page(form, self.page_title)
+            return JsonResponse({"success": False, "html": self.render_modal_fragment(form, extra)}, status=400)
+        return self.render_full_page(form, self.page_title, extra)
 
 
 class UserUpdateView(UserAccessRequiredMixin, _UserFormAjaxHelper, View):
+    required_action = "edit"
     page_title = "ویرایش کاربر و دسترسی‌ها"
 
     def get(self, request, pk):
         user_obj = get_object_or_404(User, pk=pk)
         form = DashboardUserForm(instance=user_obj)
+        access = getattr(user_obj, "dashboard_access", None)
+        extra = {"permission_matrix": _build_permission_matrix(access.permissions if access else {})}
         if self.is_ajax():
-            return HttpResponse(self.render_modal_fragment(form))
-        return self.render_full_page(form, self.page_title)
+            return HttpResponse(self.render_modal_fragment(form, extra))
+        return self.render_full_page(form, self.page_title, extra)
 
     def post(self, request, pk):
         user_obj = get_object_or_404(User, pk=pk)
         form = DashboardUserForm(request.POST, instance=user_obj)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            DashboardAccess.objects.update_or_create(
+                user=user, defaults={"permissions": _read_permissions_from_post(request.POST)}
+            )
             if self.is_ajax():
                 return JsonResponse({"success": True})
             messages.success(request, "تغییرات کاربر ذخیره شد.")
             return redirect(self.success_url)
+        access = getattr(user_obj, "dashboard_access", None)
+        extra = {"permission_matrix": _build_permission_matrix(access.permissions if access else {})}
         if self.is_ajax():
-            return JsonResponse({"success": False, "html": self.render_modal_fragment(form)}, status=400)
-        return self.render_full_page(form, self.page_title)
+            return JsonResponse({"success": False, "html": self.render_modal_fragment(form, extra)}, status=400)
+        return self.render_full_page(form, self.page_title, extra)
 
 
 class UserDeleteView(UserAccessRequiredMixin, AjaxDeleteMixin, DeleteView):
+    required_action = "delete"
     model = User
     template_name = "core/dashboard/confirm_delete.html"
     success_url = reverse_lazy("core:dash_user_list")

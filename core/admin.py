@@ -5,5 +5,5 @@ from .models import DashboardAccess
 
 @admin.register(DashboardAccess)
 class DashboardAccessAdmin(admin.ModelAdmin):
-    list_display = ("user", "section_labels")
+    list_display = ("user", "permission_summary")
     search_fields = ("user__username",)

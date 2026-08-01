@@ -1,9 +1,13 @@
-"""فرم‌های اپ core: ورود داشبورد + افزودن/ویرایش کاربر داشبورد (به‌همراه تعیین دسترسی بخش‌ها)."""
+"""فرم‌های اپ core: ورود داشبورد + افزودن/ویرایش کاربر داشبورد.
+
+توجه: ماتریس دسترسی (بخش × عملیات) به‌صورت چک‌باکس‌های خام در قالب رندر می‌شود و در
+ویو (core/views.py) به‌طور مستقیم از request.POST خوانده و در DashboardAccess ذخیره
+می‌شود؛ چون شکل «ماتریسی» آن (بخش‌ها در سطر، عملیات‌ها در ستون) با فیلدهای استاندارد
+فرم جنگو به‌سختی و با کد اضافه قابل نمایش است.
+"""
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
-
-from .models import DASHBOARD_SECTIONS
 
 User = get_user_model()
 
@@ -20,7 +24,7 @@ class StyledAuthenticationForm(AuthenticationForm):
 
 
 class DashboardUserForm(forms.Form):
-    """فرم افزودن/ویرایش کاربر داشبورد + تعیین دسترسی بخش‌ها (صفحه‌ی «کاربران» داشبورد)."""
+    """فرم افزودن/ویرایش اطلاعات پایه‌ی کاربر داشبورد (ماتریس دسترسی جدا مدیریت می‌شود)."""
 
     username = forms.CharField(
         label="نام کاربری", max_length=150,
@@ -40,14 +44,8 @@ class DashboardUserForm(forms.Form):
     )
     is_active = forms.BooleanField(label="حساب فعال باشد؟", required=False, initial=True)
     is_superuser = forms.BooleanField(
-        label="مدیر کل (دسترسی کامل به همه‌ی بخش‌ها)", required=False,
-        help_text="در صورت فعال بودن، انتخاب بخش‌های پایین دیگر تأثیری ندارد.",
-    )
-    sections = forms.MultipleChoiceField(
-        label="بخش‌های قابل دسترس",
-        required=False,
-        choices=DASHBOARD_SECTIONS,
-        widget=forms.CheckboxSelectMultiple,
+        label="مدیر کل (دسترسی کامل به همه‌ی بخش‌ها و عملیات‌ها)", required=False,
+        help_text="در صورت فعال بودن، ماتریس دسترسی پایین دیگر تأثیری ندارد.",
     )
 
     def __init__(self, *args, instance=None, **kwargs):
@@ -58,8 +56,6 @@ class DashboardUserForm(forms.Form):
             self.fields["email"].initial = instance.email
             self.fields["is_active"].initial = instance.is_active
             self.fields["is_superuser"].initial = instance.is_superuser
-            access = getattr(instance, "dashboard_access", None)
-            self.fields["sections"].initial = access.sections if access else []
 
     def clean_username(self):
         username = self.cleaned_data["username"].strip()
@@ -79,9 +75,8 @@ class DashboardUserForm(forms.Form):
         return pwd
 
     def save(self):
+        """فقط اطلاعات پایه‌ی کاربر (نه ماتریس دسترسی) را ذخیره و شیء User را برمی‌گرداند."""
         data = self.cleaned_data
-        from .models import DashboardAccess  # جلوگیری از وابستگی حلقوی در بارگذاری ماژول
-
         if self.instance is not None:
             user = self.instance
             user.username = data["username"]
@@ -99,6 +94,4 @@ class DashboardUserForm(forms.Form):
             )
             user.set_password(data["password"])
             user.save()
-
-        DashboardAccess.objects.update_or_create(user=user, defaults={"sections": data.get("sections", [])})
         return user

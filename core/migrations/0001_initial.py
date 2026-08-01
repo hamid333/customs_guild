@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             name="DashboardAccess",
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("sections", models.JSONField(blank=True, default=list, verbose_name="بخش‌های مجاز")),
+                ("permissions", models.JSONField(blank=True, default=dict, verbose_name="دسترسی‌ها")),
                 ("user", models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name="dashboard_access", to=settings.AUTH_USER_MODEL, verbose_name="کاربر")),
             ],
             options={

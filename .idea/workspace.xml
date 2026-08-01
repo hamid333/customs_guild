@@ -6,6 +6,57 @@
   <component name="ChangeListManager">
     <list default="true" id="4717d0a8-7893-445e-9c1c-c073edf502c7" name="Changes" comment="add about">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/templates/core/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/core/templates/core/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/templates/core/dashboard/base_dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/core/templates/core/dashboard/base_dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/templates/core/dashboard/user_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/core/templates/core/dashboard/user_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customs_guild/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/customs_guild/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/member/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/member/admin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/member/apps.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/member/forms.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/member/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/member/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/member/models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/member/templates/Member/fragments/_member_fields.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/member/templates/Member/member_form.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/member/templates/Member/member_list.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/member/tests.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/member/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/member/views.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/slider/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/slider/admin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/slider/apps.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/slider/forms.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/slider/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/slider/migrations/0002_rename_slider_heroslide.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/slider/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/slider/models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/slider/templates/Slider/fragments/_slide_fields.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/slider/templates/Slider/slide_list.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/slider/tests.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/slider/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/slider/views.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/specialization/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/specialization/admin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/specialization/apps.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/specialization/forms.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/specialization/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/specialization/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/specialization/models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/specialization/templates/Specialization/fragments/_specialization_fields.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/specialization/templates/Specialization/specialization_form.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/specialization/templates/Specialization/specialization_list.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/specialization/tests.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/specialization/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/specialization/views.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testsnew/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testsnew/admin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testsnew/apps.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testsnew/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testsnew/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testsnew/models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testsnew/tests.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testsnew/views.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,6 +144,7 @@
       <recent name="D:\python\Yadak_Kaveyan\orders\templates\orders" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\python\mhdcbp\static" />
       <recent name="D:\python\Yadak_Kaveyan\static" />
       <recent name="D:\python\Yadak_Kaveyan\static\assets\dashboard\fonts" />
     </key>
@@ -230,6 +282,8 @@
       <workItem from="1785357574140" duration="7000" />
       <workItem from="1785483864767" duration="268000" />
       <workItem from="1785486769329" duration="968000" />
+      <workItem from="1785509326637" duration="6318000" />
+      <workItem from="1785559427465" duration="2029000" />
     </task>
     <task id="LOCAL‎−۰۰۰۰۱" summary="add">
       <option name="closed" value="true" />

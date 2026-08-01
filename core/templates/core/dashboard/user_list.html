@@ -26,7 +26,7 @@
           {% if u.is_superuser %}
             <span class="badge badge-gold">همه‌ی بخش‌ها</span>
           {% else %}
-            {% for label in u.dashboard_access.section_labels %}<span class="badge">{{ label }}</span>{% empty %}<span class="badge" style="background:#fdecea; color:#c0392b;">بدون دسترسی</span>{% endfor %}
+            {% for label in u.dashboard_access.permission_summary %}<span class="badge">{{ label }}</span>{% empty %}<span class="badge" style="background:#fdecea; color:#c0392b;">بدون دسترسی</span>{% endfor %}
           {% endif %}
         </td>
         <td>{% if u.is_active %}<span class="badge">فعال</span>{% else %}<span class="badge" style="background:#fdecea; color:#c0392b;">غیرفعال</span>{% endif %}</td>

@@ -70,6 +70,7 @@ class MemberDetailView(DetailView):
 
 class MemberDashListView(SectionAccessRequiredMixin, ListView):
     required_section = "members"
+    required_action = "view"
     model = Member
     template_name = "members/dashboard/member_list.html"
     context_object_name = "members"
@@ -79,6 +80,7 @@ class MemberDashListView(SectionAccessRequiredMixin, ListView):
 
 class MemberCreateView(SectionAccessRequiredMixin, AjaxFormMixin, CreateView):
     required_section = "members"
+    required_action = "add"
     model = Member
     form_class = MemberForm
     fragment_template_name = "members/dashboard/fragments/_member_fields.html"
@@ -88,6 +90,7 @@ class MemberCreateView(SectionAccessRequiredMixin, AjaxFormMixin, CreateView):
 
 class MemberUpdateView(SectionAccessRequiredMixin, AjaxFormMixin, UpdateView):
     required_section = "members"
+    required_action = "edit"
     model = Member
     form_class = MemberForm
     fragment_template_name = "members/dashboard/fragments/_member_fields.html"
@@ -97,6 +100,7 @@ class MemberUpdateView(SectionAccessRequiredMixin, AjaxFormMixin, UpdateView):
 
 class MemberDeleteView(SectionAccessRequiredMixin, AjaxDeleteMixin, DeleteView):
     required_section = "members"
+    required_action = "delete"
     model = Member
     template_name = "core/dashboard/confirm_delete.html"
     success_url = reverse_lazy("members:dash_member_list")

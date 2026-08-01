@@ -10,6 +10,7 @@ from .models import Specialization
 
 class SpecializationDashListView(SectionAccessRequiredMixin, ListView):
     required_section = "specializations"
+    required_action = "view"
     model = Specialization
     template_name = "specializations/dashboard/specialization_list.html"
     context_object_name = "specializations"
@@ -19,6 +20,7 @@ class SpecializationDashListView(SectionAccessRequiredMixin, ListView):
 
 class SpecializationCreateView(SectionAccessRequiredMixin, AjaxFormMixin, CreateView):
     required_section = "specializations"
+    required_action = "add"
     model = Specialization
     form_class = SpecializationForm
     fragment_template_name = "specializations/dashboard/fragments/_specialization_fields.html"
@@ -28,6 +30,7 @@ class SpecializationCreateView(SectionAccessRequiredMixin, AjaxFormMixin, Create
 
 class SpecializationUpdateView(SectionAccessRequiredMixin, AjaxFormMixin, UpdateView):
     required_section = "specializations"
+    required_action = "edit"
     model = Specialization
     form_class = SpecializationForm
     fragment_template_name = "specializations/dashboard/fragments/_specialization_fields.html"
@@ -37,6 +40,7 @@ class SpecializationUpdateView(SectionAccessRequiredMixin, AjaxFormMixin, Update
 
 class SpecializationDeleteView(SectionAccessRequiredMixin, AjaxDeleteMixin, DeleteView):
     required_section = "specializations"
+    required_action = "delete"
     model = Specialization
     template_name = "core/dashboard/confirm_delete.html"
     success_url = reverse_lazy("specializations:dash_specialization_list")

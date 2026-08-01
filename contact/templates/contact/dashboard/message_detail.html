@@ -12,5 +12,7 @@
   <hr style="border-color:var(--line); margin:16px 0;">
   <p style="white-space:pre-line; line-height:2;">{{ contact_message.message }}</p>
   <a href="{% url 'contact:dash_message_list' %}" class="btn btn-outline-navy" style="margin-top:20px;">بازگشت به فهرست پیام‌ها</a>
+  <button type="button" class="btn btn-danger" style="margin-top:20px;" data-modal-delete
+          data-url="{% url 'contact:dash_message_delete' contact_message.pk %}" data-name="{{ contact_message.subject }}">حذف این پیام</button>
 </div>
 {% endblock %}

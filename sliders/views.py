@@ -10,6 +10,7 @@ from .models import HeroSlide
 
 class SlideDashListView(SectionAccessRequiredMixin, ListView):
     required_section = "sliders"
+    required_action = "view"
     model = HeroSlide
     template_name = "sliders/dashboard/slide_list.html"
     context_object_name = "slides"
@@ -18,6 +19,7 @@ class SlideDashListView(SectionAccessRequiredMixin, ListView):
 
 class SlideCreateView(SectionAccessRequiredMixin, AjaxFormMixin, CreateView):
     required_section = "sliders"
+    required_action = "add"
     model = HeroSlide
     form_class = HeroSlideForm
     fragment_template_name = "sliders/dashboard/fragments/_slide_fields.html"
@@ -27,6 +29,7 @@ class SlideCreateView(SectionAccessRequiredMixin, AjaxFormMixin, CreateView):
 
 class SlideUpdateView(SectionAccessRequiredMixin, AjaxFormMixin, UpdateView):
     required_section = "sliders"
+    required_action = "edit"
     model = HeroSlide
     form_class = HeroSlideForm
     fragment_template_name = "sliders/dashboard/fragments/_slide_fields.html"
@@ -36,6 +39,7 @@ class SlideUpdateView(SectionAccessRequiredMixin, AjaxFormMixin, UpdateView):
 
 class SlideDeleteView(SectionAccessRequiredMixin, AjaxDeleteMixin, DeleteView):
     required_section = "sliders"
+    required_action = "delete"
     model = HeroSlide
     template_name = "core/dashboard/confirm_delete.html"
     success_url = reverse_lazy("sliders:dash_slide_list")

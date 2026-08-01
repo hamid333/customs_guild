@@ -21,12 +21,14 @@
     <div class="grid grid-4">
       {% for m in members %}
       <div class="card member-card reveal" style="transition-delay:{{ forloop.counter0|add:0 }}0ms">
-        {% if m.photo %}
-          <img src="{{ m.photo.url }}" alt="{{ m.full_name }}">
-        {% else %}
-          <div class="member-avatar">{{ m.full_name|slice:":1" }}</div>
-        {% endif %}
-        <h3>{{ m.full_name }}</h3>
+        <a href="{% url 'members:member_detail' m.pk %}" style="display:block; color:inherit;">
+          {% if m.photo %}
+            <img src="{{ m.photo.url }}" alt="{{ m.full_name }}">
+          {% else %}
+            <div class="member-avatar">{{ m.full_name|slice:":1" }}</div>
+          {% endif %}
+          <h3>{{ m.full_name }}</h3>
+        </a>
         <p style="font-size:13px; margin-bottom:6px;">{{ m.city|default:"—" }} · عضویت {{ m.membership_no }}</p>
         <span class="badge badge-gold">{{ m.get_role_display }}</span>
         <div style="margin-top:8px;">

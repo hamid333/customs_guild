@@ -1,8 +1,6 @@
 """پردازشگرهای context مشترک که در تمام قالب‌های سایت در دسترس‌اند."""
 from django.conf import settings
 
-from .models import DASHBOARD_SECTIONS
-
 
 def site_info(request):
     """اطلاعات پایه‌ی سایت + فهرست زمینه‌های فعالیت (برای منوی کشویی)."""
@@ -18,12 +16,17 @@ def site_info(request):
 
 
 def dashboard_sections(request):
-    """اسلاگ بخش‌های داشبورد که کاربر جاری به آن‌ها دسترسی دارد (برای نمایش/پنهان‌سازی
-    لینک‌های سایدبار داشبورد). برای کاربران غیر staff همیشه خالی است."""
+    """اسلاگ بخش‌های داشبورد که کاربر جاری حداقل دسترسی «نمایش» به آن‌ها دارد (برای
+    نمایش/پنهان‌سازی لینک‌های سایدبار داشبورد). برای کاربران غیر staff همیشه خالی است."""
     user = getattr(request, "user", None)
     if not user or not user.is_authenticated or not user.is_staff:
         return {"user_dashboard_sections": set()}
+
+    from .models import get_dashboard_sections
+
     if user.is_superuser:
-        return {"user_dashboard_sections": {slug for slug, _ in DASHBOARD_SECTIONS}}
+        return {"user_dashboard_sections": {slug for slug, _ in get_dashboard_sections()}}
     access = getattr(user, "dashboard_access", None)
-    return {"user_dashboard_sections": set(access.sections) if access else set()}
+    if not access:
+        return {"user_dashboard_sections": set()}
+    return {"user_dashboard_sections": {slug for slug, actions in (access.permissions or {}).items() if "view" in actions}}

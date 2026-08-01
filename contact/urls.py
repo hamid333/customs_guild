@@ -9,4 +9,5 @@ urlpatterns = [
 
     path("dashboard/messages/", views.ContactMessageDashListView.as_view(), name="dash_message_list"),
     path("dashboard/messages/<int:pk>/", views.ContactMessageDetailView.as_view(), name="dash_message_detail"),
+    path("dashboard/messages/<int:pk>/delete/", views.ContactMessageDeleteView.as_view(), name="dash_message_delete"),
 ]

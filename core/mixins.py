@@ -3,9 +3,10 @@
 sliders، specializations، contact) برای ویوهای Create/Update/Delete/List استفاده می‌شوند.
 
     StaffRequiredMixin        - فقط کاربران staff.
-    SectionAccessRequiredMixin- علاوه بر staff بودن، کاربر باید دسترسی بخش موردنظر
-                                 (required_section) را هم داشته باشد. مدیران کل
-                                 (superuser) همیشه به همه‌ی بخش‌ها دسترسی دارند.
+    SectionAccessRequiredMixin- علاوه بر staff بودن، کاربر باید دقیقاً همان عملیات
+                                 (required_action: view/add/edit/delete) را روی همان
+                                 بخش (required_section) مجاز داشته باشد. مدیران کل
+                                 (superuser) همیشه به همه‌چیز دسترسی دارند.
     AjaxFormMixin              - افزودن/ویرایش با مودال SweetAlert2 + AJAX (به همراه
                                  fallback صفحه‌ی کامل برای درخواست‌های بدون جاوااسکریپت).
     AjaxDeleteMixin            - حذف با مودال تأیید SweetAlert2 + AJAX.
@@ -25,9 +26,11 @@ class StaffRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 
 
 class SectionAccessRequiredMixin(StaffRequiredMixin):
-    """هر ویو با ست‌کردن required_section مشخص می‌کند به کدام بخش داشبورد تعلق دارد؛
-    کاربر باید علاوه بر staff بودن، دسترسی همان بخش را هم داشته باشد."""
+    """هر ویو با ست‌کردن required_section و required_action مشخص می‌کند دقیقاً به کدام
+    عملیات از کدام بخش داشبورد تعلق دارد؛ کاربر باید علاوه بر staff بودن، همان مجوز
+    دقیق را هم داشته باشد. required_action پیش‌فرض «view» است (مناسب صفحات فهرست)."""
     required_section = None
+    required_action = "view"
 
     def test_func(self):
         if not super().test_func():
@@ -38,7 +41,7 @@ class SectionAccessRequiredMixin(StaffRequiredMixin):
         if not self.required_section:
             return True
         access = getattr(user, "dashboard_access", None)
-        return bool(access and access.has_section(self.required_section))
+        return bool(access and access.has_permission(self.required_section, self.required_action))
 
 
 class AjaxFormMixin:
